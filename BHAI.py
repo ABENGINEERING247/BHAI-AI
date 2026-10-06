@@ -50,7 +50,7 @@ except ImportError:
 
 
 # ============================================================
-# PAGE CONFIGURATION
+# PAGE CONFIG
 # ============================================================
 
 st.set_page_config(
@@ -69,652 +69,6 @@ APP_NAME = "BHAI AI"
 APP_VERSION = "5.0"
 DEFAULT_MODEL = "gpt-6-luna"
 DB_FILE = "bhai_ai.db"
-
-
-# ============================================================
-# BLUE & WHITE THEME + SCROLLING TICKER
-# ============================================================
-
-st.markdown(
-    """
-    <style>
-
-    /* ========================================================
-       COLOR SYSTEM
-       ======================================================== */
-
-    :root {
-        --bhai-blue: #0B5ED7;
-        --bhai-dark-blue: #084298;
-        --bhai-blue-2: #146CDA;
-        --bhai-light-blue: #EAF3FF;
-        --bhai-light-blue-2: #F3F8FF;
-        --bhai-border: #C9DDF7;
-        --bhai-white: #FFFFFF;
-        --bhai-text: #16324F;
-        --bhai-muted: #607D9B;
-    }
-
-
-    /* ========================================================
-       APPLICATION BACKGROUND
-       ======================================================== */
-
-    .stApp {
-        background: #F5F9FF;
-        color: #16324F;
-    }
-
-    .main {
-        background: #F5F9FF;
-    }
-
-    .block-container {
-        padding-top: 1rem;
-        padding-bottom: 3rem;
-    }
-
-
-    /* ========================================================
-       SCROLLING TICKER
-       TEAM AI MARKHORS
-       ======================================================== */
-
-    .ticker-wrapper {
-        width: 100%;
-        overflow: hidden;
-        white-space: nowrap;
-
-        background:
-            linear-gradient(
-                90deg,
-                #084298,
-                #0B5ED7,
-                #146CDA,
-                #0B5ED7,
-                #084298
-            );
-
-        border-radius: 12px;
-
-        border: 1px solid #6EA8E8;
-
-        box-shadow:
-            0 5px 18px rgba(11, 94, 215, 0.16);
-
-        margin-bottom: 20px;
-
-        height: 42px;
-
-        display: flex;
-        align-items: center;
-    }
-
-    .ticker-content {
-        display: inline-block;
-
-        padding-left: 100%;
-
-        animation:
-            ticker-scroll 22s linear infinite;
-
-        color: #FFFFFF;
-
-        font-size: 18px;
-
-        font-weight: 800;
-
-        letter-spacing: 3px;
-
-        text-transform: uppercase;
-    }
-
-    .ticker-content span {
-        margin-right: 80px;
-    }
-
-    @keyframes ticker-scroll {
-
-        0% {
-            transform: translateX(0);
-        }
-
-        100% {
-            transform: translateX(-100%);
-        }
-
-    }
-
-
-    /* ========================================================
-       SIDEBAR
-       ======================================================== */
-
-    section[data-testid="stSidebar"] {
-        background: #FFFFFF !important;
-        border-right: 2px solid #D9E8FA;
-    }
-
-    section[data-testid="stSidebar"] > div {
-        background: #FFFFFF !important;
-    }
-
-    section[data-testid="stSidebar"] * {
-        color: #16324F;
-    }
-
-
-    /* ========================================================
-       HEADINGS
-       ======================================================== */
-
-    h1 {
-        color: #084298 !important;
-        font-weight: 800 !important;
-    }
-
-    h2 {
-        color: #0B5ED7 !important;
-        font-weight: 750 !important;
-    }
-
-    h3 {
-        color: #146CDA !important;
-        font-weight: 700 !important;
-    }
-
-    h4 {
-        color: #084298 !important;
-    }
-
-    p {
-        color: #16324F;
-    }
-
-
-    /* ========================================================
-       HERO
-       ======================================================== */
-
-    .hero {
-        background:
-            linear-gradient(
-                135deg,
-                #FFFFFF 0%,
-                #EAF3FF 100%
-            );
-
-        border: 1px solid #B9D4F5;
-
-        border-left: 7px solid #0B5ED7;
-
-        border-radius: 22px;
-
-        padding: 32px;
-
-        margin-bottom: 25px;
-
-        box-shadow:
-            0 8px 25px rgba(11, 94, 215, 0.08);
-    }
-
-    .main-title {
-        color: #084298 !important;
-
-        font-size: 46px;
-
-        font-weight: 900;
-
-        letter-spacing: -1px;
-    }
-
-    .subtitle {
-        color: #55708D !important;
-
-        font-size: 18px;
-
-        margin-top: 6px;
-
-        margin-bottom: 15px;
-    }
-
-
-    /* ========================================================
-       AGENT CARDS
-       ======================================================== */
-
-    .agent-card {
-        background: #FFFFFF;
-
-        border: 1px solid #C9DDF7;
-
-        border-radius: 18px;
-
-        padding: 20px;
-
-        margin-bottom: 16px;
-
-        min-height: 175px;
-
-        box-shadow:
-            0 5px 18px rgba(11, 94, 215, 0.06);
-
-        transition:
-            transform 0.2s ease,
-            box-shadow 0.2s ease,
-            border-color 0.2s ease;
-    }
-
-    .agent-card:hover {
-        transform: translateY(-3px);
-
-        border-color: #0B5ED7;
-
-        box-shadow:
-            0 10px 25px rgba(11, 94, 215, 0.14);
-    }
-
-    .agent-icon {
-        font-size: 40px;
-    }
-
-    .agent-name {
-        color: #084298;
-
-        font-size: 21px;
-
-        font-weight: 800;
-
-        margin-top: 8px;
-    }
-
-    .agent-description {
-        color: #607D9B;
-
-        font-size: 14px;
-
-        margin-top: 7px;
-
-        line-height: 1.5;
-    }
-
-
-    /* ========================================================
-       GUIDE BOX
-       ======================================================== */
-
-    .guide-box {
-        background: #FFFFFF;
-
-        border-left: 5px solid #0B5ED7;
-
-        border-radius: 12px;
-
-        padding: 18px;
-
-        box-shadow:
-            0 4px 15px rgba(11, 94, 215, 0.06);
-    }
-
-
-    /* ========================================================
-       BUTTONS
-       ======================================================== */
-
-    .stButton > button {
-        background: #0B5ED7 !important;
-
-        color: #FFFFFF !important;
-
-        border: 1px solid #0B5ED7 !important;
-
-        border-radius: 10px !important;
-
-        font-weight: 700 !important;
-
-        min-height: 42px;
-
-        transition:
-            background 0.2s ease,
-            transform 0.2s ease,
-            box-shadow 0.2s ease;
-    }
-
-    .stButton > button:hover {
-        background: #084298 !important;
-
-        border-color: #084298 !important;
-
-        color: #FFFFFF !important;
-
-        transform: translateY(-1px);
-
-        box-shadow:
-            0 6px 16px rgba(11, 94, 215, 0.20);
-    }
-
-    button[kind="primary"] {
-        background: #0B5ED7 !important;
-
-        color: #FFFFFF !important;
-
-        border-color: #0B5ED7 !important;
-    }
-
-    button[kind="primary"]:hover {
-        background: #084298 !important;
-
-        border-color: #084298 !important;
-    }
-
-
-    /* ========================================================
-       INPUTS
-       ======================================================== */
-
-    .stTextInput input,
-    .stTextArea textarea,
-    .stNumberInput input,
-    .stDateInput input,
-    .stTimeInput input {
-
-        background: #FFFFFF !important;
-
-        color: #16324F !important;
-
-        border: 1px solid #B9D4F5 !important;
-
-        border-radius: 10px !important;
-    }
-
-    .stTextInput input:focus,
-    .stTextArea textarea:focus,
-    .stNumberInput input:focus,
-    .stDateInput input:focus,
-    .stTimeInput input:focus {
-
-        border-color: #0B5ED7 !important;
-
-        box-shadow:
-            0 0 0 2px rgba(11, 94, 215, 0.12) !important;
-    }
-
-
-    /* ========================================================
-       SELECTBOX
-       ======================================================== */
-
-    div[data-baseweb="select"] > div {
-
-        background: #FFFFFF !important;
-
-        border: 1px solid #B9D4F5 !important;
-
-        border-radius: 10px !important;
-
-        color: #16324F !important;
-    }
-
-
-    /* ========================================================
-       RADIO / CHECKBOX
-       ======================================================== */
-
-    .stRadio label,
-    .stCheckbox label {
-
-        color: #16324F !important;
-
-        font-weight: 600;
-    }
-
-
-    /* ========================================================
-       METRICS
-       ======================================================== */
-
-    div[data-testid="stMetric"] {
-
-        background: #FFFFFF;
-
-        border: 1px solid #C9DDF7;
-
-        border-radius: 16px;
-
-        padding: 18px;
-
-        box-shadow:
-            0 5px 15px rgba(11, 94, 215, 0.06);
-    }
-
-    div[data-testid="stMetricLabel"] {
-        color: #607D9B !important;
-    }
-
-    div[data-testid="stMetricValue"] {
-        color: #084298 !important;
-
-        font-weight: 800 !important;
-    }
-
-
-    /* ========================================================
-       EXPANDERS
-       ======================================================== */
-
-    div[data-testid="stExpander"] {
-
-        background: #FFFFFF;
-
-        border: 1px solid #C9DDF7;
-
-        border-radius: 14px;
-    }
-
-    div[data-testid="stExpander"] summary {
-
-        color: #084298 !important;
-
-        font-weight: 700;
-    }
-
-
-    /* ========================================================
-       ALERTS
-       ======================================================== */
-
-    div[data-testid="stAlert"] {
-        border-radius: 12px;
-
-        border: 1px solid #C9DDF7;
-    }
-
-
-    /* ========================================================
-       DATAFRAME
-       ======================================================== */
-
-    div[data-testid="stDataFrame"] {
-
-        border: 1px solid #C9DDF7;
-
-        border-radius: 12px;
-
-        overflow: hidden;
-    }
-
-
-    /* ========================================================
-       CODE
-       ======================================================== */
-
-    pre {
-
-        background: #EAF3FF !important;
-
-        border: 1px solid #C9DDF7 !important;
-
-        border-radius: 12px !important;
-    }
-
-    code {
-        color: #084298 !important;
-    }
-
-
-    /* ========================================================
-       CHAT
-       ======================================================== */
-
-    div[data-testid="stChatMessage"] {
-
-        background: #FFFFFF;
-
-        border: 1px solid #C9DDF7;
-
-        border-radius: 16px;
-
-        margin-bottom: 10px;
-    }
-
-    div[data-testid="stChatInput"] {
-
-        border: 1px solid #B9D4F5;
-
-        border-radius: 12px;
-    }
-
-
-    /* ========================================================
-       WELCOME DIALOG
-       ======================================================== */
-
-    div[role="dialog"] {
-
-        background: #FFFFFF !important;
-
-        border: 2px solid #B9D4F5 !important;
-
-        border-radius: 24px !important;
-
-        box-shadow:
-            0 20px 60px rgba(8, 66, 152, 0.20) !important;
-    }
-
-    div[role="dialog"] h1 {
-        color: #084298 !important;
-    }
-
-
-    /* ========================================================
-       DOWNLOAD BUTTON
-       ======================================================== */
-
-    .stDownloadButton > button {
-
-        background: #FFFFFF !important;
-
-        color: #084298 !important;
-
-        border: 2px solid #0B5ED7 !important;
-
-        border-radius: 10px !important;
-
-        font-weight: 700 !important;
-    }
-
-    .stDownloadButton > button:hover {
-
-        background: #EAF3FF !important;
-
-        color: #084298 !important;
-    }
-
-
-    /* ========================================================
-       DIVIDER
-       ======================================================== */
-
-    hr {
-        border-color: #D9E8FA !important;
-    }
-
-
-    /* ========================================================
-       FOOTER
-       ======================================================== */
-
-    .footer {
-
-        text-align: center;
-
-        margin-top: 60px;
-
-        padding: 30px;
-
-        color: #607D9B;
-
-        border-top: 1px solid #D9E8FA;
-
-        background: #FFFFFF;
-
-        border-radius: 18px 18px 0 0;
-    }
-
-    .footer b {
-        color: #084298;
-    }
-
-
-    /* ========================================================
-       SCROLLBAR
-       ======================================================== */
-
-    ::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: #F5F9FF;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: #9CC2ED;
-
-        border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: #0B5ED7;
-    }
-
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-
-# ============================================================
-# TEAM AI MARKHORS TICKER
-# ============================================================
-
-st.markdown(
-    """
-    <div class="ticker-wrapper">
-        <div class="ticker-content">
-            <span>🏆 TEAM AI MARKHORS</span>
-            <span>🤖 BHAI AI</span>
-            <span>🚀 ARTIFICIAL INTELLIGENCE</span>
-            <span>💡 INNOVATION</span>
-            <span>🏆 TEAM AI MARKHORS</span>
-            <span>🤖 BHAI AI</span>
-            <span>🚀 ARTIFICIAL INTELLIGENCE</span>
-            <span>💡 INNOVATION</span>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
 
 
 # ============================================================
@@ -1068,28 +422,218 @@ AGENTS = {
 # ============================================================
 
 KEYWORD_ROUTING = {
-    1: ["plan", "planning", "daily plan", "weekly plan", "routine"],
-    2: ["remind", "reminder", "alert", "yaad", "alarm"],
-    3: ["calendar", "appointment", "event", "schedule"],
-    4: ["task", "todo", "to do", "kaam"],
-    5: ["productivity", "productive", "workflow", "automation"],
-    6: ["learn", "learning", "study", "course", "class", "education"],
-    7: ["research", "research paper", "literature", "methodology"],
-    8: ["message", "communication", "whatsapp", "sms"],
-    9: ["email", "mail", "send email", "email kar"],
-    10: ["meeting", "agenda", "minutes", "mom"],
-    11: ["health", "wellness", "healthy", "sleep"],
-    12: ["fitness", "exercise", "workout", "gym"],
-    13: ["finance", "money", "budget", "expense", "saving"],
-    14: ["shopping", "buy", "purchase", "grocery"],
-    15: ["travel", "trip", "flight", "hotel", "tour"],
-    16: ["news", "latest news", "current affairs"],
-    17: ["note", "notes", "remember", "summarize"],
-    18: ["file", "document", "word", "pdf", "report"],
-    19: ["home", "house", "cleaning"],
-    20: ["game", "games", "entertainment", "movie", "chess"],
-    21: ["notification", "notify", "scheduled email", "automatic email", "system alarm"],
+    1: [
+        "plan",
+        "planning",
+        "daily plan",
+        "weekly plan",
+        "routine",
+    ],
+    2: [
+        "remind",
+        "reminder",
+        "alert",
+        "yaad",
+        "alarm",
+    ],
+    3: [
+        "calendar",
+        "appointment",
+        "event",
+        "schedule",
+    ],
+    4: [
+        "task",
+        "todo",
+        "to do",
+        "kaam",
+    ],
+    5: [
+        "productivity",
+        "productive",
+        "workflow",
+        "automation",
+    ],
+    6: [
+        "learn",
+        "learning",
+        "study",
+        "course",
+        "class",
+        "education",
+    ],
+    7: [
+        "research",
+        "research paper",
+        "literature",
+        "methodology",
+    ],
+    8: [
+        "message",
+        "communication",
+        "whatsapp",
+        "sms",
+    ],
+    9: [
+        "email",
+        "mail",
+        "send email",
+        "email kar",
+    ],
+    10: [
+        "meeting",
+        "agenda",
+        "minutes",
+        "mom",
+    ],
+    11: [
+        "health",
+        "wellness",
+        "healthy",
+        "sleep",
+    ],
+    12: [
+        "fitness",
+        "exercise",
+        "workout",
+        "gym",
+    ],
+    13: [
+        "finance",
+        "money",
+        "budget",
+        "expense",
+        "saving",
+    ],
+    14: [
+        "shopping",
+        "buy",
+        "purchase",
+        "grocery",
+    ],
+    15: [
+        "travel",
+        "trip",
+        "flight",
+        "hotel",
+        "tour",
+    ],
+    16: [
+        "news",
+        "latest news",
+        "current affairs",
+    ],
+    17: [
+        "note",
+        "notes",
+        "remember",
+        "summarize",
+    ],
+    18: [
+        "file",
+        "document",
+        "word",
+        "pdf",
+        "report",
+    ],
+    19: [
+        "home",
+        "house",
+        "cleaning",
+    ],
+    20: [
+        "game",
+        "games",
+        "entertainment",
+        "movie",
+        "chess",
+    ],
+    21: [
+        "notification",
+        "notify",
+        "scheduled email",
+        "automatic email",
+        "system alarm",
+    ],
 }
+
+
+# ============================================================
+# CUSTOM CSS
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+
+    .main-title {
+        font-size: 46px;
+        font-weight: 900;
+        letter-spacing: -1px;
+    }
+
+    .subtitle {
+        font-size: 18px;
+        color: #777777;
+        margin-bottom: 20px;
+    }
+
+    .hero {
+        padding: 32px;
+        border-radius: 24px;
+        border: 1px solid rgba(128,128,128,.20);
+        background: linear-gradient(
+            135deg,
+            rgba(80,120,255,.10),
+            rgba(0,190,160,.07)
+        );
+        margin-bottom: 25px;
+    }
+
+    .agent-card {
+        border: 1px solid rgba(128,128,128,.20);
+        border-radius: 18px;
+        padding: 20px;
+        margin-bottom: 16px;
+        background: rgba(128,128,128,.035);
+        min-height: 170px;
+    }
+
+    .agent-icon {
+        font-size: 38px;
+    }
+
+    .agent-name {
+        font-size: 21px;
+        font-weight: 750;
+        margin-top: 8px;
+    }
+
+    .agent-description {
+        color: #777777;
+        font-size: 14px;
+        margin-top: 7px;
+    }
+
+    .guide-box {
+        border-left: 5px solid #777777;
+        padding: 16px;
+        border-radius: 10px;
+        background: rgba(128,128,128,.05);
+    }
+
+    .footer {
+        text-align: center;
+        margin-top: 60px;
+        padding: 30px;
+        color: #777777;
+        border-top: 1px solid rgba(128,128,128,.20);
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 
 # ============================================================
@@ -1111,7 +655,6 @@ defaults = {
 }
 
 for key, value in defaults.items():
-
     if key not in st.session_state:
         st.session_state[key] = value
 
@@ -1124,23 +667,17 @@ db_lock = threading.Lock()
 
 
 def get_db():
-
     conn = sqlite3.connect(
         DB_FILE,
         check_same_thread=False,
     )
-
     conn.row_factory = sqlite3.Row
-
     return conn
 
 
 def initialize_database():
-
     with db_lock:
-
         conn = get_db()
-
         cursor = conn.cursor()
 
         cursor.execute(
@@ -1173,7 +710,6 @@ def initialize_database():
         )
 
         conn.commit()
-
         conn.close()
 
 
@@ -1181,13 +717,11 @@ initialize_database()
 
 
 # ============================================================
-# CONTACTS
+# CONTACT FUNCTIONS
 # ============================================================
 
 def add_contact_db(name, email):
-
     with db_lock:
-
         conn = get_db()
 
         conn.execute(
@@ -1204,12 +738,10 @@ def add_contact_db(name, email):
         )
 
         conn.commit()
-
         conn.close()
 
 
 def get_contacts():
-
     conn = get_db()
 
     rows = conn.execute(
@@ -1226,9 +758,7 @@ def get_contacts():
 
 
 def delete_contact(contact_id):
-
     with db_lock:
-
         conn = get_db()
 
         conn.execute(
@@ -1237,12 +767,11 @@ def delete_contact(contact_id):
         )
 
         conn.commit()
-
         conn.close()
 
 
 # ============================================================
-# SCHEDULES
+# SCHEDULE FUNCTIONS
 # ============================================================
 
 def add_schedule_db(
@@ -1253,11 +782,9 @@ def add_schedule_db(
     subject,
     run_at,
 ):
-
     schedule_id = uuid.uuid4().hex[:10]
 
     with db_lock:
-
         conn = get_db()
 
         conn.execute(
@@ -1294,14 +821,12 @@ def add_schedule_db(
         )
 
         conn.commit()
-
         conn.close()
 
     return schedule_id
 
 
 def get_schedules():
-
     conn = get_db()
 
     rows = conn.execute(
@@ -1318,9 +843,7 @@ def get_schedules():
 
 
 def cancel_schedule(schedule_id):
-
     with db_lock:
-
         conn = get_db()
 
         conn.execute(
@@ -1333,7 +856,6 @@ def cancel_schedule(schedule_id):
         )
 
         conn.commit()
-
         conn.close()
 
 
@@ -1342,13 +864,8 @@ def cancel_schedule(schedule_id):
 # ============================================================
 
 def get_secret(name, default=""):
-
     try:
-
-        value = st.secrets.get(
-            name,
-            default,
-        )
+        value = st.secrets.get(name, default)
 
         if value is None:
             return default
@@ -1356,34 +873,24 @@ def get_secret(name, default=""):
         return str(value).strip()
 
     except Exception:
-
         return default
 
 
 def get_api_key_source():
-
     if get_secret("OPENAI_API_KEY"):
         return "Streamlit Secrets"
 
-    if os.getenv(
-        "OPENAI_API_KEY",
-        "",
-    ).strip():
-
+    if os.getenv("OPENAI_API_KEY", "").strip():
         return "Environment Variable"
 
     if st.session_state.manual_api_key.strip():
-
         return "Session Key"
 
     return "Not Configured"
 
 
 def get_api_key():
-
-    secret_key = get_secret(
-        "OPENAI_API_KEY"
-    )
+    secret_key = get_secret("OPENAI_API_KEY")
 
     if secret_key:
         return secret_key
@@ -1400,15 +907,12 @@ def get_api_key():
 
 
 def get_model():
-
     selected = st.session_state.model.strip()
 
     if selected:
         return selected
 
-    secret_model = get_secret(
-        "OPENAI_MODEL"
-    )
+    secret_model = get_secret("OPENAI_MODEL")
 
     if secret_model:
         return secret_model
@@ -1417,7 +921,6 @@ def get_model():
 
 
 def mask_key(key):
-
     if not key:
         return "Not configured"
 
@@ -1428,32 +931,21 @@ def mask_key(key):
 
 
 def api_status():
-
     if OpenAI is None:
-
         return "❌ OpenAI package not installed"
 
     if not get_api_key():
-
         return "⚪ API key not configured"
 
-    return (
-        f"🟢 API available via "
-        f"{get_api_key_source()}"
-    )
+    return f"🟢 API available via {get_api_key_source()}"
 
 
 # ============================================================
 # OPENAI
 # ============================================================
 
-def call_openai(
-    prompt,
-    system_instruction=None,
-):
-
+def call_openai(prompt, system_instruction=None):
     if OpenAI is None:
-
         return (
             "❌ OpenAI package is not installed.\n\n"
             "Install it with:\n"
@@ -1463,28 +955,23 @@ def call_openai(
     api_key = get_api_key()
 
     if not api_key:
-
         return (
             "❌ OpenAI API key is not configured.\n\n"
-            "Open 🔐 API Management and configure "
-            "your API key."
+            "Open 🔐 API Management and configure your API key."
         )
 
     model = get_model()
 
     try:
-
-        client = OpenAI(
-            api_key=api_key
-        )
+        client = OpenAI(api_key=api_key)
 
         response = client.responses.create(
             model=model,
             instructions=(
                 system_instruction
                 or
-                "You are BHAI AI, a professional "
-                "master multi-agent assistant."
+                "You are BHAI AI, a professional master "
+                "multi-agent assistant."
             ),
             input=prompt,
         )
@@ -1495,14 +982,9 @@ def call_openai(
             "",
         )
 
-        return (
-            result
-            or
-            "No response generated."
-        )
+        return result or "No response generated."
 
     except Exception as exc:
-
         error_text = str(exc)
 
         if (
@@ -1510,66 +992,47 @@ def call_openai(
             or "quota" in error_text.lower()
             or "credit" in error_text.lower()
         ):
-
             return (
                 "❌ OpenAI API quota/credits error.\n\n"
-                "The API key may be valid, but the "
-                "associated API project may have "
-                "insufficient credits or quota."
+                "The API key may be valid, but the associated "
+                "API project may have insufficient credits or quota."
             )
 
-        return (
-            f"❌ OpenAI Error:\n\n{error_text}"
-        )
+        return f"❌ OpenAI Error:\n\n{error_text}"
 
 
 def test_openai_connection():
-
     result = call_openai(
         "Reply with exactly: BHAI API connection successful."
     )
 
     if result.startswith("❌"):
-
         return False, result
 
     return True, result
 
 
 # ============================================================
-# AGENT ROUTING
+# ROUTING
 # ============================================================
 
 def detect_agents(text):
-
     text_lower = text.lower()
-
     found = []
 
     for agent_id, keywords in KEYWORD_ROUTING.items():
-
         for keyword in keywords:
-
             if keyword.lower() in text_lower:
-
                 found.append(agent_id)
-
                 break
 
     if not found:
-
         found = [1]
 
-    return list(
-        dict.fromkeys(found)
-    )[:5]
+    return list(dict.fromkeys(found))[:5]
 
 
-def build_agent_prompt(
-    agent_id,
-    request,
-):
-
+def build_agent_prompt(agent_id, request):
     agent = AGENTS[agent_id]
 
     guidance = "\n".join(
@@ -1602,11 +1065,7 @@ RESPONSE RULES:
 """
 
 
-def demo_response(
-    request,
-    agent_ids,
-):
-
+def demo_response(request, agent_ids):
     names = ", ".join(
         AGENTS[item]["name"]
         for item in agent_ids
@@ -1640,46 +1099,33 @@ Go to:
 Then configure your API from:
 
 **🔐 API Management**
+
 """
 
 
 # ============================================================
-# DATE/TIME
+# ROMAN URDU DATE/TIME
 # ============================================================
 
 def normalize_roman_urdu(text):
-
     replacements = {
-
         r"\baaj\b": "today",
-
         r"\baj\b": "today",
-
         r"\bkal\b": "tomorrow",
-
         r"\bparson\b": "in 2 days",
-
         r"\bsubah\b": "AM",
-
         r"\bsawere\b": "AM",
-
         r"\bsavera\b": "AM",
-
         r"\bdopahar\b": "PM",
-
         r"\bdupehar\b": "PM",
-
         r"\bshaam\b": "PM",
-
         r"\bsham\b": "PM",
-
         r"\braat\b": "PM",
     }
 
     result = text
 
     for pattern, replacement in replacements.items():
-
         result = re.sub(
             pattern,
             replacement,
@@ -1691,15 +1137,11 @@ def normalize_roman_urdu(text):
 
 
 def parse_datetime_text(text):
-
     normalized = normalize_roman_urdu(text)
-
     now = datetime.now()
 
     if dateparser:
-
         try:
-
             result = dateparser.parse(
                 normalized,
                 settings={
@@ -1709,13 +1151,9 @@ def parse_datetime_text(text):
             )
 
             if result:
-
-                return result.replace(
-                    tzinfo=None
-                )
+                return result.replace(tzinfo=None)
 
         except Exception:
-
             pass
 
     match = re.search(
@@ -1725,15 +1163,8 @@ def parse_datetime_text(text):
     )
 
     if match:
-
-        hour = int(
-            match.group(1)
-        )
-
-        minute = int(
-            match.group(2) or 0
-        )
-
+        hour = int(match.group(1))
+        minute = int(match.group(2) or 0)
         ampm = match.group(3).lower()
 
         if ampm == "pm" and hour < 12:
@@ -1750,16 +1181,10 @@ def parse_datetime_text(text):
         )
 
         if "tomorrow" in normalized.lower():
-
-            result += timedelta(
-                days=1
-            )
+            result += timedelta(days=1)
 
         if result <= now:
-
-            result += timedelta(
-                days=1
-            )
+            result += timedelta(days=1)
 
         return result
 
@@ -1770,42 +1195,25 @@ def parse_datetime_text(text):
 # SMTP
 # ============================================================
 
-def send_email_smtp(
-    to_email,
-    subject,
-    body,
-):
-
+def send_email_smtp(to_email, subject, body):
     host = get_secret(
         "SMTP_HOST",
-        os.getenv(
-            "SMTP_HOST",
-            "",
-        ),
+        os.getenv("SMTP_HOST", ""),
     )
 
     port_value = get_secret(
         "SMTP_PORT",
-        os.getenv(
-            "SMTP_PORT",
-            "587",
-        ),
+        os.getenv("SMTP_PORT", "587"),
     )
 
     username = get_secret(
         "SMTP_USERNAME",
-        os.getenv(
-            "SMTP_USERNAME",
-            "",
-        ),
+        os.getenv("SMTP_USERNAME", ""),
     )
 
     password = get_secret(
         "SMTP_PASSWORD",
-        os.getenv(
-            "SMTP_PASSWORD",
-            "",
-        ),
+        os.getenv("SMTP_PASSWORD", ""),
     )
 
     sender = get_secret(
@@ -1814,13 +1222,8 @@ def send_email_smtp(
     )
 
     try:
-
-        port = int(
-            port_value or 587
-        )
-
+        port = int(port_value or 587)
     except ValueError:
-
         port = 587
 
     if not all(
@@ -1831,14 +1234,12 @@ def send_email_smtp(
             sender,
         ]
     ):
-
         return (
             False,
             "SMTP is not configured.",
         )
 
     try:
-
         message = MIMEMultipart()
 
         message["From"] = sender
@@ -1858,14 +1259,11 @@ def send_email_smtp(
             port,
             timeout=20,
         ) as server:
-
             server.starttls()
-
             server.login(
                 username,
                 password,
             )
-
             server.sendmail(
                 sender,
                 [to_email],
@@ -1878,7 +1276,6 @@ def send_email_smtp(
         )
 
     except Exception as exc:
-
         return (
             False,
             f"SMTP Error: {exc}",
@@ -1892,17 +1289,12 @@ def send_email_smtp(
 scheduler = None
 
 if BackgroundScheduler:
-
     try:
-
         scheduler = BackgroundScheduler(
             timezone="Asia/Karachi"
         )
-
         scheduler.start()
-
     except Exception:
-
         scheduler = None
 
 
@@ -1912,7 +1304,6 @@ def scheduled_email_job(
     subject,
     message,
 ):
-
     success, _ = send_email_smtp(
         recipient,
         subject,
@@ -1920,7 +1311,6 @@ def scheduled_email_job(
     )
 
     with db_lock:
-
         conn = get_db()
 
         conn.execute(
@@ -1932,18 +1322,12 @@ def scheduled_email_job(
             """,
             (
                 datetime.now().isoformat(),
-                (
-                    "Completed"
-                    if success
-                    else
-                    "Failed"
-                ),
+                "Completed" if success else "Failed",
                 schedule_id,
             ),
         )
 
         conn.commit()
-
         conn.close()
 
 
@@ -1954,16 +1338,13 @@ def schedule_email(
     message,
     run_at,
 ):
-
     if not scheduler or not DateTrigger:
-
         return (
             False,
             "APScheduler is not installed or running.",
         )
 
     try:
-
         scheduler.add_job(
             scheduled_email_job,
             trigger=DateTrigger(
@@ -1985,7 +1366,6 @@ def schedule_email(
         )
 
     except Exception as exc:
-
         return (
             False,
             f"Scheduler error: {exc}",
@@ -1996,13 +1376,8 @@ def schedule_email(
 # DOCUMENT GENERATORS
 # ============================================================
 
-def create_word(
-    title,
-    body,
-):
-
+def create_word(title, body):
     if Document is None:
-
         return None
 
     document = Document()
@@ -2013,12 +1388,8 @@ def create_word(
     )
 
     for line in body.split("\n"):
-
         if line.strip():
-
-            document.add_paragraph(
-                line
-            )
+            document.add_paragraph(line)
 
     output = io.BytesIO()
 
@@ -2029,18 +1400,13 @@ def create_word(
     return output.getvalue()
 
 
-def create_pdf(
-    title,
-    body,
-):
-
+def create_pdf(title, body):
     if (
         SimpleDocTemplate is None
         or Paragraph is None
         or Spacer is None
         or getSampleStyleSheet is None
     ):
-
         return None
 
     output = io.BytesIO()
@@ -2053,34 +1419,23 @@ def create_pdf(
     styles = getSampleStyleSheet()
 
     story = [
-
         Paragraph(
             title,
             styles["Title"],
         ),
-
-        Spacer(
-            1,
-            12,
-        ),
+        Spacer(1, 12),
     ]
 
     for line in body.split("\n"):
-
         if line.strip():
-
             story.append(
                 Paragraph(
                     line,
                     styles["BodyText"],
                 )
             )
-
             story.append(
-                Spacer(
-                    1,
-                    7,
-                )
+                Spacer(1, 7)
             )
 
     document.build(story)
@@ -2097,7 +1452,6 @@ def create_pdf(
 def show_welcome_popup():
 
     if st.session_state.welcome_seen:
-
         return
 
     @st.dialog(
@@ -2108,47 +1462,13 @@ def show_welcome_popup():
 
         st.markdown(
             """
-            <div style="
-                text-align:center;
-                padding:20px;
-                background:
-                    linear-gradient(
-                        135deg,
-                        #FFFFFF,
-                        #EAF3FF
-                    );
-                border-radius:20px;
-                border:1px solid #B9D4F5;
-            ">
-
-                <div style="
-                    font-size:70px;
-                ">
-                    🤖
-                </div>
-
-                <h1 style="
-                    color:#084298;
-                    font-size:38px;
-                ">
-                    Welcome to BHAI AI
-                </h1>
-
-                <p style="
-                    color:#607D9B;
-                    font-size:18px;
-                ">
-                    Your Intelligent Master Agent
+            <div style="text-align:center;">
+                <div style="font-size:70px;">🤖</div>
+                <h1>Welcome to BHAI AI</h1>
+                <p style="font-size:18px;">
+                    Your Intelligent Master Agent for
+                    Daily Routine Automation
                 </p>
-
-                <div style="
-                    color:#0B5ED7;
-                    font-weight:700;
-                    font-size:16px;
-                ">
-                    Think → Ask → Route → Agent → Action → Result
-                </div>
-
             </div>
             """,
             unsafe_allow_html=True,
@@ -2159,21 +1479,18 @@ def show_welcome_popup():
         col1, col2, col3 = st.columns(3)
 
         with col1:
-
             st.metric(
                 "🤖 AI Agents",
                 "21",
             )
 
         with col2:
-
             st.metric(
                 "⚙️ Modes",
                 "2",
             )
 
         with col3:
-
             st.metric(
                 "🧠 Controller",
                 "BHAI Master",
@@ -2187,10 +1504,10 @@ def show_welcome_popup():
 
         st.write(
             """
-            BHAI AI is a multi-agent assistant designed
-            to organize daily routines, productivity,
-            learning, communication, research, documents,
-            reminders and other activities.
+            BHAI AI is a multi-agent assistant designed to
+            organize daily routines, productivity, learning,
+            communication, research, documents, reminders
+            and other activities.
             """
         )
 
@@ -2221,7 +1538,6 @@ def show_welcome_popup():
         mode1, mode2 = st.columns(2)
 
         with mode1:
-
             st.success(
                 """
                 **Demo Mode**
@@ -2234,7 +1550,6 @@ def show_welcome_popup():
             )
 
         with mode2:
-
             st.info(
                 """
                 **API Mode**
@@ -2254,16 +1569,20 @@ def show_welcome_popup():
             """
             **1.** Select Demo Mode or API Mode.
 
-            **2.** Open **🧠 BHAI Master**.
+            **2.** Open **🧠 BHAI Master** and simply
+            describe what you need.
 
-            **3.** Describe what you need.
+            **3.** BHAI automatically identifies
+            the relevant agent.
 
-            **4.** BHAI identifies the relevant agent.
+            **4.** Open **🤖 AGENTS** if you want to
+            work directly with a particular agent.
 
-            **5.** Open **🤖 Agent Center** for direct
-            agent access.
+            **5.** Use **🔐 API Management** to configure
+            your API.
 
-            **6.** Use **🔐 API Management** for API settings.
+            **6.** Use **⏰ Reminders & Schedules** for
+            scheduled reminders and notifications.
             """
         )
 
@@ -2279,9 +1598,7 @@ def show_welcome_popup():
             type="primary",
             use_container_width=True,
         ):
-
             st.session_state.welcome_seen = True
-
             st.rerun()
 
     welcome_dialog()
@@ -2296,19 +1613,13 @@ def render_dashboard():
     st.markdown(
         """
         <div class="hero">
-
-            <div class="main-title">
-                🤖 BHAI AI
-            </div>
-
+            <div class="main-title">🤖 BHAI AI</div>
             <div class="subtitle">
                 Master Agent for Intelligent Daily Routine Automation
             </div>
-
             <b>
                 Think → Ask → Route → Agent → Action → Result
             </b>
-
         </div>
         """,
         unsafe_allow_html=True,
@@ -2343,37 +1654,31 @@ def render_dashboard():
     )
 
     cards = [
-
         (
             "🧠",
             "Master Agent",
             "Automatically routes requests to specialized agents.",
         ),
-
         (
             "⏰",
             "Reminders",
             "Create reminders and scheduled activities.",
         ),
-
         (
             "📧",
             "Email Automation",
             "Generate and schedule professional emails.",
         ),
-
         (
             "📄",
             "Documents",
             "Generate Word and PDF documents.",
         ),
-
         (
             "🤖",
             "21 Agents",
             "Dedicated agents for daily routines.",
         ),
-
         (
             "🔐",
             "API Management",
@@ -2392,19 +1697,11 @@ def render_dashboard():
             st.markdown(
                 f"""
                 <div class="agent-card">
-
-                    <div class="agent-icon">
-                        {icon}
-                    </div>
-
-                    <div class="agent-name">
-                        {title}
-                    </div>
-
+                    <div class="agent-icon">{icon}</div>
+                    <div class="agent-name">{title}</div>
                     <div class="agent-description">
                         {description}
                     </div>
-
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -2433,7 +1730,7 @@ and create a meeting agenda.
 
 
 # ============================================================
-# MASTER AGENT
+# MASTER AGENT PAGE
 # ============================================================
 
 def render_master():
@@ -2463,16 +1760,12 @@ def render_master():
     ):
 
         if not request.strip():
-
             st.warning(
                 "Please enter your request."
             )
-
             return
 
-        agents = detect_agents(
-            request
-        )
+        agents = detect_agents(request)
 
         st.session_state.last_agents = agents
 
@@ -2499,7 +1792,6 @@ def render_master():
             prompts = []
 
             for agent_id in agents:
-
                 prompts.append(
                     build_agent_prompt(
                         agent_id,
@@ -2507,17 +1799,15 @@ def render_master():
                     )
                 )
 
-            combined_prompt = "\n\n".join(
-                prompts
-            )
+            combined_prompt = "\n\n".join(prompts)
 
             result = call_openai(
                 combined_prompt,
                 system_instruction=(
                     "You are BHAI AI Master Agent. "
-                    "Coordinate the relevant specialized "
-                    "agents and produce one clear, practical "
-                    "and structured answer."
+                    "Coordinate the relevant specialized agents. "
+                    "Produce one clear, practical and structured "
+                    "answer for the user."
                 ),
             )
 
@@ -2538,13 +1828,11 @@ def render_master():
             "📌 BHAI Result"
         )
 
-        st.markdown(
-            result
-        )
+        st.markdown(result)
 
 
 # ============================================================
-# CHATBOT
+# CHATBOT PAGE
 # ============================================================
 
 def render_chatbot():
@@ -2562,7 +1850,6 @@ def render_chatbot():
         with st.chat_message(
             message["role"]
         ):
-
             st.markdown(
                 message["content"]
             )
@@ -2581,14 +1868,9 @@ def render_chatbot():
         )
 
         with st.chat_message("user"):
+            st.markdown(prompt)
 
-            st.markdown(
-                prompt
-            )
-
-        agents = detect_agents(
-            prompt
-        )
+        agents = detect_agents(prompt)
 
         if st.session_state.mode == "API Mode":
 
@@ -2620,13 +1902,8 @@ def render_chatbot():
             }
         )
 
-        with st.chat_message(
-            "assistant"
-        ):
-
-            st.markdown(
-                result
-            )
+        with st.chat_message("assistant"):
+            st.markdown(result)
 
 
 # ============================================================
@@ -2656,9 +1933,7 @@ def render_agent_center():
 
     search = st.text_input(
         "🔎 Search Agents",
-        placeholder=(
-            "Search Email, Planner, Research..."
-        ),
+        placeholder="Search Email, Planner, Research...",
     )
 
     filtered = []
@@ -2675,10 +1950,7 @@ def render_agent_center():
             not search.strip()
             or search.lower() in searchable
         ):
-
-            filtered.append(
-                agent_id
-            )
+            filtered.append(agent_id)
 
     st.write(
         f"**{len(filtered)} agent(s) available**"
@@ -2695,19 +1967,15 @@ def render_agent_center():
             st.markdown(
                 f"""
                 <div class="agent-card">
-
                     <div class="agent-icon">
                         {agent["icon"]}
                     </div>
-
                     <div class="agent-name">
                         {agent_id}. {agent["name"]}
                     </div>
-
                     <div class="agent-description">
                         {agent["description"]}
                     </div>
-
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -2720,19 +1988,15 @@ def render_agent_center():
             ):
 
                 st.session_state.selected_agent = agent_id
-
                 st.session_state.agent_page = True
-
                 st.rerun()
 
 
 # ============================================================
-# INDIVIDUAL AGENT
+# INDIVIDUAL AGENT PAGE
 # ============================================================
 
-def render_single_agent(
-    agent_id
-):
+def render_single_agent(agent_id):
 
     agent = AGENTS[agent_id]
 
@@ -2741,7 +2005,6 @@ def render_single_agent(
     ):
 
         st.session_state.agent_page = False
-
         st.rerun()
 
     st.divider()
@@ -2749,19 +2012,15 @@ def render_single_agent(
     st.markdown(
         f"""
         <div class="hero">
-
             <div style="font-size:60px;">
                 {agent["icon"]}
             </div>
-
             <div class="main-title">
                 {agent["name"]}
             </div>
-
             <div class="subtitle">
                 {agent["description"]}
             </div>
-
         </div>
         """,
         unsafe_allow_html=True,
@@ -2776,7 +2035,6 @@ def render_single_agent(
         )
 
         for item in agent["guidance"]:
-
             st.markdown(
                 f"✅ {item}"
             )
@@ -2788,7 +2046,6 @@ def render_single_agent(
         )
 
         for example in agent["examples"]:
-
             st.code(
                 example,
                 language="text",
@@ -2800,10 +2057,12 @@ def render_single_agent(
         f"{agent['icon']} Talk to {agent['name']}"
     )
 
+    prompt_key = f"agent_prompt_{agent_id}"
+
     prompt = st.text_area(
         "Your Request",
         height=180,
-        key=f"agent_prompt_{agent_id}",
+        key=prompt_key,
         placeholder=(
             f"Enter a request for {agent['name']}..."
         ),
@@ -2817,11 +2076,9 @@ def render_single_agent(
     ):
 
         if not prompt.strip():
-
             st.warning(
                 "Please enter a request."
             )
-
             return
 
         with st.spinner(
@@ -2837,8 +2094,8 @@ def render_single_agent(
                     ),
                     system_instruction=(
                         f"You are the {agent['name']} "
-                        "of BHAI AI. Stay focused on "
-                        "your assigned responsibilities."
+                        "of BHAI AI. Stay focused on your "
+                        "assigned responsibilities."
                     ),
                 )
 
@@ -2855,9 +2112,7 @@ def render_single_agent(
             "📌 Agent Result"
         )
 
-        st.markdown(
-            result
-        )
+        st.markdown(result)
 
 
 # ============================================================
@@ -2897,7 +2152,6 @@ def render_schedules():
         )
 
         recipient = ""
-
         subject = ""
 
         if action == "Email Notification":
@@ -2940,7 +2194,6 @@ def render_schedules():
             st.error(
                 "Please select a future date and time."
             )
-
             return
 
         if (
@@ -2951,7 +2204,6 @@ def render_schedules():
             st.error(
                 "Recipient email is required."
             )
-
             return
 
         schedule_id = add_schedule_db(
@@ -2978,16 +2230,10 @@ def render_schedules():
             )
 
             if success:
-
-                st.success(
-                    result
-                )
-
+                st.success(result)
             else:
-
                 st.warning(
-                    "Schedule saved, but scheduler failed: "
-                    + result
+                    f"Schedule saved, but scheduler failed: {result}"
                 )
 
         else:
@@ -3012,14 +2258,11 @@ def render_schedules():
         st.info(
             "No schedules found."
         )
-
         return
 
     for row in rows:
 
-        with st.container(
-            border=True
-        ):
+        with st.container(border=True):
 
             st.write(
                 f"**{row['title']}**"
@@ -3079,10 +2322,7 @@ def render_contacts():
 
     if submitted:
 
-        if (
-            not name.strip()
-            or not email.strip()
-        ):
+        if not name.strip() or not email.strip():
 
             st.error(
                 "Name and email are required."
@@ -3110,7 +2350,6 @@ def render_contacts():
         st.info(
             "No contacts available."
         )
-
         return
 
     for row in rows:
@@ -3185,7 +2424,6 @@ def render_email_generator():
             st.warning(
                 "Please enter the email purpose."
             )
-
             return
 
         if st.session_state.mode == "API Mode":
@@ -3216,8 +2454,7 @@ Body:
         else:
 
             result = (
-                f"Subject: Regarding "
-                f"{purpose[:60]}\n\n"
+                f"Subject: Regarding {purpose[:60]}\n\n"
                 f"Dear {recipient or 'Sir/Madam'},\n\n"
                 f"I am writing regarding {purpose}.\n\n"
                 "Kind regards,\n"
@@ -3269,7 +2506,6 @@ def render_documents():
             st.warning(
                 "Please enter document content."
             )
-
             return
 
         word_data = create_word(
@@ -3348,13 +2584,10 @@ def render_api_management():
         )
 
         if get_api_key():
-
             st.success(
                 api_status()
             )
-
         else:
-
             st.warning(
                 api_status()
             )
@@ -3461,9 +2694,7 @@ SMTP_FROM = "your-email@gmail.com"
         ):
 
             st.session_state.manual_api_key = ""
-
             st.session_state.api_test_result = None
-
             st.rerun()
 
     if st.session_state.api_test_result:
@@ -3473,16 +2704,9 @@ SMTP_FROM = "your-email@gmail.com"
         )
 
         if success:
-
-            st.success(
-                message
-            )
-
+            st.success(message)
         else:
-
-            st.error(
-                message
-            )
+            st.error(message)
 
     st.divider()
 
@@ -3530,29 +2754,10 @@ with st.sidebar:
 
     st.markdown(
         """
-        <div style="
-            text-align:center;
-            padding:10px;
-        ">
-
-            <div style="
-                font-size:52px;
-            ">
-                🤖
-            </div>
-
-            <h2 style="
-                color:#084298 !important;
-            ">
-                BHAI AI
-            </h2>
-
-            <small style="
-                color:#607D9B;
-            ">
-                Master Agent System
-            </small>
-
+        <div style="text-align:center;">
+            <div style="font-size:52px;">🤖</div>
+            <h2>BHAI AI</h2>
+            <small>Master Agent System</small>
         </div>
         """,
         unsafe_allow_html=True,
@@ -3614,8 +2819,7 @@ with st.sidebar:
             agent_id
             for agent_id, agent in AGENTS.items()
             if selected_agent_name
-            ==
-            f"{agent['icon']} {agent['name']}"
+            == f"{agent['icon']} {agent['name']}"
         ),
         1,
     )
@@ -3626,7 +2830,6 @@ with st.sidebar:
     ):
 
         st.session_state.selected_agent = selected_id
-
         st.session_state.agent_page = True
 
         st.rerun()
@@ -3639,17 +2842,12 @@ with st.sidebar:
     ):
 
         st.session_state.welcome_seen = False
-
         st.rerun()
 
     st.divider()
 
     st.caption(
         f"Version {APP_VERSION}"
-    )
-
-    st.caption(
-        "🏆 TEAM AI MARKHORS"
     )
 
     st.caption(
@@ -3712,46 +2910,12 @@ show_welcome_popup()
 st.markdown(
     """
     <div class="footer">
-
-        <div style="
-            font-size:28px;
-            color:#084298;
-            font-weight:800;
-        ">
-            🤖 BHAI AI
-        </div>
-
-        <div style="
-            color:#607D9B;
-            margin-top:8px;
-        ">
-            Master Agent for Intelligent Daily Routine Automation
-        </div>
-
-        <div style="
-            color:#0B5ED7;
-            font-weight:800;
-            margin-top:12px;
-            letter-spacing:2px;
-        ">
-            🏆 TEAM AI MARKHORS
-        </div>
-
-        <div style="
-            margin-top:12px;
-            color:#607D9B;
-        ">
-            21 Specialized Agents • Demo Mode • API Mode
-        </div>
-
-        <div style="
-            margin-top:15px;
-            color:#084298;
-            font-weight:700;
-        ">
-            By Engr. Bilal Mehmood
-        </div>
-
+        <b>🤖 BHAI AI</b><br>
+        Master Agent for Intelligent Daily Routine Automation
+        <br><br>
+        21 Specialized Agents • Demo Mode • API Mode
+        <br><br>
+        <b>By Engr. Bilal Mehmood</b>
     </div>
     """,
     unsafe_allow_html=True,
