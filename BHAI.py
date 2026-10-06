@@ -1,12 +1,35 @@
 import os
+import io
 from datetime import datetime, date
 
 import streamlit as st
+
+# ============================================================
+# OPTIONAL / EXTERNAL PACKAGES
+# ============================================================
 
 try:
     from openai import OpenAI
 except ImportError:
     OpenAI = None
+
+try:
+    from docx import Document
+except ImportError:
+    Document = None
+
+try:
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.styles import getSampleStyleSheet
+    from reportlab.platypus import (
+        SimpleDocTemplate,
+        Paragraph,
+        Spacer,
+    )
+    from reportlab.lib.units import inch
+except ImportError:
+    A4 = None
+    Document = None
 
 
 # ============================================================
@@ -17,7 +40,7 @@ st.set_page_config(
     page_title="BHAI AI - 20 Agent System",
     page_icon="🤖",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
 
@@ -25,7 +48,8 @@ st.set_page_config(
 # CUSTOM CSS
 # ============================================================
 
-st.markdown("""
+st.markdown(
+    """
 <style>
 
 .main-title {
@@ -56,12 +80,12 @@ st.markdown("""
 }
 
 .agent-card {
-    padding: 14px;
+    padding: 15px;
     border-radius: 12px;
     border: 1px solid #ddd;
     margin-bottom: 10px;
     background-color: #fafafa;
-    min-height: 95px;
+    min-height: 125px;
 }
 
 .agent-card:hover {
@@ -101,8 +125,8 @@ st.markdown("""
 }
 
 .navigation-box {
-    padding: 12px;
-    border-radius: 10px;
+    padding: 15px;
+    border-radius: 12px;
     background-color: #eef7ff;
     border: 1px solid #90caf9;
     margin-bottom: 15px;
@@ -120,7 +144,9 @@ st.markdown("""
 }
 
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 
 # ============================================================
@@ -175,7 +201,7 @@ AGENTS = {
         "Creates travel plans, itineraries and checklists.",
 
     "News Agent":
-        "Organizes news-reading routines; no live browsing in this application.",
+        "Organizes news-reading routines; this application does not provide live news browsing.",
 
     "Notes Agent":
         "Structures notes, ideas and knowledge.",
@@ -187,7 +213,7 @@ AGENTS = {
         "Organizes household and home routines.",
 
     "Entertainment Agent":
-        "Plans games, hobbies, movies, music and leisure activities."
+        "Plans games, hobbies, movies, music, chess and leisure activities.",
 }
 
 
@@ -216,12 +242,12 @@ AGENT_ICONS = {
     "Notes Agent": "📝",
     "File Agent": "📁",
     "Home Agent": "🏠",
-    "Entertainment Agent": "🎮"
+    "Entertainment Agent": "🎮",
 }
 
 
 # ============================================================
-# KEYWORD ROUTING
+# AGENT KEYWORDS
 # ============================================================
 
 KEYWORD_ROUTING = {
@@ -231,8 +257,8 @@ KEYWORD_ROUTING = {
         "daily",
         "day",
         "routine",
-        "schedule",
-        "organize my day"
+        "organize my day",
+        "planning",
     ],
 
     "Reminder Agent": [
@@ -240,15 +266,15 @@ KEYWORD_ROUTING = {
         "reminder",
         "remember",
         "alert",
-        "notification"
+        "notification",
     ],
 
     "Calendar Agent": [
         "calendar",
         "appointment",
         "event",
-        "meeting time",
-        "schedule meeting"
+        "calendar event",
+        "schedule meeting",
     ],
 
     "Task Agent": [
@@ -256,14 +282,15 @@ KEYWORD_ROUTING = {
         "todo",
         "to-do",
         "action item",
-        "work"
+        "work task",
     ],
 
     "Productivity Agent": [
         "productive",
         "productivity",
         "focus",
-        "time management"
+        "time management",
+        "deep work",
     ],
 
     "Learning Agent": [
@@ -274,7 +301,8 @@ KEYWORD_ROUTING = {
         "education",
         "course",
         "training",
-        "class"
+        "class",
+        "programming",
     ],
 
     "Research Agent": [
@@ -283,7 +311,8 @@ KEYWORD_ROUTING = {
         "literature",
         "journal",
         "researcher",
-        "publication"
+        "publication",
+        "thesis",
     ],
 
     "Communication Agent": [
@@ -291,7 +320,7 @@ KEYWORD_ROUTING = {
         "communication",
         "whatsapp",
         "reply",
-        "contact"
+        "contact",
     ],
 
     "Email Agent": [
@@ -299,14 +328,14 @@ KEYWORD_ROUTING = {
         "mail",
         "send email",
         "write email",
-        "draft email"
+        "draft email",
     ],
 
     "Meeting Agent": [
         "meeting",
         "agenda",
         "minutes",
-        "meeting notes"
+        "meeting notes",
     ],
 
     "Health Agent": [
@@ -314,7 +343,7 @@ KEYWORD_ROUTING = {
         "wellness",
         "sleep",
         "water",
-        "hydration"
+        "hydration",
     ],
 
     "Fitness Agent": [
@@ -323,7 +352,7 @@ KEYWORD_ROUTING = {
         "workout",
         "walk",
         "running",
-        "gym"
+        "gym",
     ],
 
     "Finance Agent": [
@@ -332,14 +361,14 @@ KEYWORD_ROUTING = {
         "expense",
         "money",
         "salary",
-        "saving"
+        "saving",
     ],
 
     "Shopping Agent": [
         "shopping",
         "buy",
         "purchase",
-        "shopping list"
+        "shopping list",
     ],
 
     "Travel Agent": [
@@ -348,20 +377,20 @@ KEYWORD_ROUTING = {
         "hotel",
         "flight",
         "tour",
-        "journey"
+        "journey",
     ],
 
     "News Agent": [
         "news",
         "headline",
-        "current affairs"
+        "current affairs",
     ],
 
     "Notes Agent": [
         "note",
         "notes",
         "idea",
-        "knowledge"
+        "knowledge",
     ],
 
     "File Agent": [
@@ -370,7 +399,9 @@ KEYWORD_ROUTING = {
         "document",
         "folder",
         "pdf",
-        "report"
+        "word",
+        "docx",
+        "report",
     ],
 
     "Home Agent": [
@@ -378,7 +409,7 @@ KEYWORD_ROUTING = {
         "house",
         "clean",
         "household",
-        "maintenance"
+        "maintenance",
     ],
 
     "Entertainment Agent": [
@@ -389,8 +420,8 @@ KEYWORD_ROUTING = {
         "hobby",
         "fun",
         "chess",
-        "play"
-    ]
+        "play",
+    ],
 }
 
 
@@ -398,26 +429,26 @@ KEYWORD_ROUTING = {
 # SESSION STATE
 # ============================================================
 
-if "chat_messages" not in st.session_state:
-    st.session_state.chat_messages = []
+DEFAULT_STATE = {
 
-if "last_agents" not in st.session_state:
-    st.session_state.last_agents = []
+    "chat_messages": [],
+    "last_agents": [],
+    "last_results": [],
+    "reminders": [],
+    "deadlines": [],
+    "generated_emails": [],
+    "manual_api_key": "",
+    "generated_document_content": "",
+    "document_title": "",
+    "document_author": "Engr. Bilal Mehmood",
+}
 
-if "last_results" not in st.session_state:
-    st.session_state.last_results = []
 
-if "reminders" not in st.session_state:
-    st.session_state.reminders = []
+for key, value in DEFAULT_STATE.items():
 
-if "deadlines" not in st.session_state:
-    st.session_state.deadlines = []
+    if key not in st.session_state:
 
-if "generated_emails" not in st.session_state:
-    st.session_state.generated_emails = []
-
-if "manual_api_key" not in st.session_state:
-    st.session_state.manual_api_key = ""
+        st.session_state[key] = value
 
 
 # ============================================================
@@ -438,15 +469,17 @@ def get_api_key():
         secret_key = ""
 
     if secret_key:
+
         return secret_key
 
-    env_key = os.getenv(
+    environment_key = os.getenv(
         "OPENAI_API_KEY",
         ""
     )
 
-    if env_key:
-        return env_key
+    if environment_key:
+
+        return environment_key
 
     return st.session_state.get(
         "manual_api_key",
@@ -455,21 +488,21 @@ def get_api_key():
 
 
 # ============================================================
-# OPENAI API CALL
+# OPENAI CALL
 # ============================================================
 
 def call_openai(
     prompt,
     system_instruction,
     model,
-    api_key
+    api_key,
 ):
 
     if OpenAI is None:
 
         return (
             "OpenAI package is not installed.\n\n"
-            "Please run:\n"
+            "Install it using:\n"
             "pip install openai"
         )
 
@@ -486,26 +519,26 @@ def call_openai(
         response = client.responses.create(
             model=model,
             instructions=system_instruction,
-            input=prompt
+            input=prompt,
         )
 
         return response.output_text
 
-    except Exception as e:
+    except Exception as error:
 
         return (
-            "OpenAI API Error:\n"
-            + str(e)
+            "OpenAI API Error:\n\n"
+            + str(error)
         )
 
 
 # ============================================================
-# DEMO ROUTER
+# DEMO MASTER ROUTER
 # ============================================================
 
 def bhai_demo_router(
     user_request,
-    max_agents
+    max_agents,
 ):
 
     text = user_request.lower()
@@ -531,7 +564,7 @@ def bhai_demo_router(
         selected = [
             "Planner Agent",
             "Task Agent",
-            "Productivity Agent"
+            "Productivity Agent",
         ]
 
     return selected[:max_agents]
@@ -545,7 +578,7 @@ def bhai_api_router(
     user_request,
     model,
     api_key,
-    max_agents
+    max_agents,
 ):
 
     agent_list = "\n".join(
@@ -555,8 +588,7 @@ def bhai_api_router(
     )
 
     system_instruction = f"""
-
-You are BHAI.
+You are BHAI, the Master Agent.
 
 BHAI means:
 
@@ -565,8 +597,7 @@ H = Helpful
 A = AI
 I = Intelligent
 
-You are the MASTER AGENT controlling
-20 specialist agents.
+You control 20 specialist agents.
 
 AVAILABLE AGENTS:
 
@@ -581,23 +612,21 @@ RULES:
 1. Understand the user's intent.
 2. Select only genuinely relevant agents.
 3. Maximum {max_agents} agents.
-4. Use multiple agents when the request
-   contains multiple requirements.
-5. Return ONLY exact agent names.
+4. Use multiple agents when the request has
+   multiple requirements.
+5. Return only exact agent names.
 6. Separate names with commas.
 7. Never invent an agent.
-8. Do not provide explanations.
-9. If the request is general daily planning,
+8. If the request is general daily planning,
    use Planner Agent, Task Agent and
    Productivity Agent.
-
 """
 
     result = call_openai(
         user_request,
         system_instruction,
         model,
-        api_key
+        api_key,
     )
 
     selected = []
@@ -614,103 +643,100 @@ RULES:
 
 
 # ============================================================
-# DEMO AGENT EXECUTION
+# DEMO SPECIALIST AGENTS
 # ============================================================
 
 def run_demo_agent(
     agent_name,
-    user_request
+    user_request,
 ):
 
-    demo_responses = {
+    responses = {
 
         "Planner Agent":
-            f"Create a priority-based daily plan for:\n"
-            f"{user_request}",
+            "Create a priority-based daily plan.",
 
         "Reminder Agent":
-            "Create reminders for important tasks, "
-            "meetings, learning sessions and routines.",
+            "Create reminders for important tasks, meetings and routines.",
 
         "Calendar Agent":
-            "Allocate meetings, appointments, focused "
-            "work blocks and personal time.",
+            "Allocate meetings, appointments and focused work blocks.",
 
         "Task Agent":
             "Break the request into small actionable tasks.",
 
         "Productivity Agent":
-            "Use priority management, focused work "
-            "sessions and short breaks.",
+            "Use priority management, focus sessions and short breaks.",
 
         "Learning Agent":
-            "Create a structured learning session "
-            "with objectives and study time.",
+            "Create a structured learning plan with objectives and study sessions.",
 
         "Research Agent":
-            "Define research question → sources → "
-            "analysis → summary.",
+            "Define research question → sources → analysis → summary.",
 
         "Communication Agent":
-            "Identify recipient, purpose and "
-            "communication requirements.",
+            "Identify communication purpose, audience and required message.",
 
         "Email Agent":
-            "Prepare subject → greeting → message → "
-            "closing → review.",
+            "Prepare subject → greeting → body → closing.",
 
         "Meeting Agent":
-            "Agenda → discussion → decisions → "
-            "action items.",
+            "Create agenda → discussion points → decisions → action items.",
 
         "Health Agent":
-            "Include hydration, breaks, sleep and "
-            "general wellbeing activities.",
+            "Include hydration, breaks, sleep and general wellness activities.",
 
         "Fitness Agent":
-            "Create suitable walking, stretching "
-            "or exercise activities.",
+            "Create suitable walking, stretching or exercise activities.",
 
         "Finance Agent":
-            "Organize expenses, budget and "
-            "financial priorities.",
+            "Organize expenses, budget categories and financial priorities.",
 
         "Shopping Agent":
-            "Create and prioritize the required "
-            "shopping list.",
+            "Create and prioritize the required shopping list.",
 
         "Travel Agent":
-            "Create itinerary → transport → "
-            "accommodation → checklist.",
+            "Create itinerary → transport → accommodation → checklist.",
 
         "News Agent":
-            "Create a routine for reviewing "
-            "trusted news sources.",
+            "Create a routine for reviewing trusted news sources.",
 
         "Notes Agent":
-            "Capture → organize → categorize → review.",
+            "Capture → organize → categorize → review notes.",
 
         "File Agent":
-            "Organize documents and files into "
-            "logical folders.",
+            "Organize documents, folders and document-generation tasks.",
 
         "Home Agent":
-            "Prioritize household cleaning, "
-            "maintenance and home activities.",
+            "Prioritize household cleaning, maintenance and home activities.",
 
         "Entertainment Agent":
-            "Plan suitable games, hobbies, movies, "
-            "music or chess time."
+            "Plan games, hobbies, movies, music or chess activities.",
     }
 
-    return (
-        "[DEMO MODE]\n\n"
-        +
-        demo_responses.get(
-            agent_name,
-            "Agent completed the request."
-        )
+    response = responses.get(
+        agent_name,
+        "Agent completed the request."
     )
+
+    return f"""
+## {AGENT_ICONS.get(agent_name, "🤖")} {agent_name}
+
+### User Request
+
+{user_request}
+
+### Demo Result
+
+{response}
+
+### Status
+
+✅ Completed in Demo Mode.
+
+> Demo Mode simulates the agent response.
+> It does not perform external actions.
+"""
 
 
 # ============================================================
@@ -721,7 +747,7 @@ def run_api_agent(
     agent_name,
     user_request,
     model,
-    api_key
+    api_key,
 ):
 
     description = AGENTS[
@@ -729,38 +755,33 @@ def run_api_agent(
     ]
 
     system_instruction = f"""
+You are the {agent_name}.
 
-You are the specialist:
-
-{agent_name}
-
-RESPONSIBILITY:
+Your responsibility:
 
 {description}
 
-You operate under the BHAI Master Agent.
+You work under the BHAI Master Agent.
 
 USER REQUEST:
 
 {user_request}
 
-RULES:
+Rules:
 
-1. Give practical results.
-2. Be concise but useful.
-3. Structure the response clearly.
+1. Give practical and useful results.
+2. Structure the answer clearly.
+3. Be concise where possible.
 4. Do not claim external actions were completed.
-5. Only propose actions that require integrations.
+5. Do not invent important facts.
 6. Do not override the BHAI Master Agent.
-7. Do not invent facts.
-
 """
 
     return call_openai(
         user_request,
         system_instruction,
         model,
-        api_key
+        api_key,
     )
 
 
@@ -773,63 +794,57 @@ def bhai_final_summary(
     results,
     mode,
     model,
-    api_key
+    api_key,
 ):
 
     combined = "\n\n".join(
-        f"{name}:\n{result}"
+        f"### {name}\n{result}"
         for name, result in results
     )
 
     if mode == "Demo Mode":
 
         return f"""
-### 🤖 BHAI FINAL RESPONSE
+# 🤖 BHAI Final Response
 
-**Request**
+### User Request
 
 {user_request}
 
-### 🧩 Activated Agents
+### Activated Agents
 
-{", ".join(
-    name for name, _ in results
-)}
+{", ".join(name for name, _ in results)}
 
-### 📋 Combined Result
+### Combined Result
 
 {combined}
 
 ### BHAI Status
 
-✅ Request processed successfully
-in Demo Mode.
+✅ Request processed successfully in Demo Mode.
 
-Demo Mode simulates agent behavior
-and does not perform external actions.
+Demo Mode simulates agent behavior and does not
+perform external actions.
 """
 
     system_instruction = """
+You are BHAI, the Master Agent.
 
-You are BHAI, the MASTER AGENT.
+Combine the specialist agent outputs into one
+clear and useful final response.
 
-Combine the specialist outputs into one
-clear final response.
+Rules:
 
-The response must:
-
-1. Address the user's original request.
-2. Combine useful information from agents.
+1. Address the original user request.
+2. Combine useful information.
 3. Avoid unnecessary repetition.
-4. Clearly distinguish recommendations,
-   planned actions and completed actions.
-5. Never claim an external action was
-   performed unless an actual integration exists.
-
+4. Clearly distinguish planned actions,
+   recommendations and completed actions.
+5. Never claim an external action was completed
+   unless an actual integration exists.
 """
 
     prompt = f"""
-
 USER REQUEST:
 
 {user_request}
@@ -839,19 +854,18 @@ SPECIALIST RESULTS:
 {combined}
 
 Create the final BHAI response.
-
 """
 
     return call_openai(
         prompt,
         system_instruction,
         model,
-        api_key
+        api_key,
     )
 
 
 # ============================================================
-# CONTEXT-AWARE CHAT PROCESSOR
+# CHAT PROCESSOR
 # ============================================================
 
 def process_bhai_chat(
@@ -859,14 +873,12 @@ def process_bhai_chat(
     mode,
     model,
     api_key,
-    max_agents
+    max_agents,
 ):
 
     context = ""
 
-    for message in (
-        st.session_state.chat_messages[-10:]
-    ):
+    for message in st.session_state.chat_messages[-10:]:
 
         context += (
             message["role"].upper()
@@ -876,7 +888,6 @@ def process_bhai_chat(
         )
 
     enhanced_request = f"""
-
 PREVIOUS CONVERSATION:
 
 {context}
@@ -885,19 +896,14 @@ CURRENT USER REQUEST:
 
 {user_request}
 
-Use previous conversation context
-when it is relevant.
+Use the previous conversation when relevant.
 """
-
-    # --------------------------------------------------------
-    # ROUTING
-    # --------------------------------------------------------
 
     if mode == "Demo Mode":
 
         selected_agents = bhai_demo_router(
             enhanced_request,
-            max_agents
+            max_agents,
         )
 
     else:
@@ -906,24 +912,16 @@ when it is relevant.
             enhanced_request,
             model,
             api_key,
-            max_agents
+            max_agents,
         )
-
-    # --------------------------------------------------------
-    # FALLBACK
-    # --------------------------------------------------------
 
     if not selected_agents:
 
         selected_agents = [
             "Planner Agent",
             "Task Agent",
-            "Productivity Agent"
+            "Productivity Agent",
         ]
-
-    # --------------------------------------------------------
-    # RUN AGENTS
-    # --------------------------------------------------------
 
     results = []
 
@@ -933,7 +931,7 @@ when it is relevant.
 
             result = run_demo_agent(
                 agent_name,
-                user_request
+                user_request,
             )
 
         else:
@@ -942,44 +940,40 @@ when it is relevant.
                 agent_name,
                 enhanced_request,
                 model,
-                api_key
+                api_key,
             )
 
         results.append(
             (
                 agent_name,
-                result
+                result,
             )
         )
-
-    # --------------------------------------------------------
-    # SYNTHESIS
-    # --------------------------------------------------------
 
     final_response = bhai_final_summary(
         user_request,
         results,
         mode,
         model,
-        api_key
+        api_key,
     )
 
     return (
         selected_agents,
         results,
-        final_response
+        final_response,
     )
 
 
 # ============================================================
-# REMINDER
+# REMINDER FUNCTIONS
 # ============================================================
 
 def add_reminder(
     title,
     reminder_date,
     reminder_time,
-    priority
+    priority,
 ):
 
     st.session_state.reminders.append(
@@ -990,20 +984,20 @@ def add_reminder(
             "priority": priority,
             "created": datetime.now().strftime(
                 "%Y-%m-%d %H:%M"
-            )
+            ),
         }
     )
 
 
 # ============================================================
-# DEADLINE
+# DEADLINE FUNCTION
 # ============================================================
 
 def add_deadline(
     title,
     deadline_date,
     priority,
-    notes
+    notes,
 ):
 
     st.session_state.deadlines.append(
@@ -1014,7 +1008,7 @@ def add_deadline(
             "notes": notes,
             "created": datetime.now().strftime(
                 "%Y-%m-%d %H:%M"
-            )
+            ),
         }
     )
 
@@ -1030,7 +1024,7 @@ def generate_email(
     details,
     mode,
     model,
-    api_key
+    api_key,
 ):
 
     if mode == "Demo Mode":
@@ -1043,8 +1037,8 @@ I am writing regarding {purpose}.
 
 {details}
 
-Please let me know if you require
-any additional information.
+Please let me know if you require any
+additional information.
 
 Best regards,
 
@@ -1052,7 +1046,6 @@ Engr. Bilal Mehmood
 """
 
     prompt = f"""
-
 Create a professional email.
 
 Recipient:
@@ -1067,33 +1060,355 @@ Tone:
 Details:
 {details}
 
-Return:
-
-Subject:
-...
-
-Email Body:
-...
-
+Return a subject and complete email body.
 """
 
     system_instruction = """
-
 You are the BHAI Email Agent.
 
-Write a clear, professional and
-grammatically correct email.
+Write a clear, professional and grammatically
+correct email.
 
 Do not invent important facts.
-
 """
 
     return call_openai(
         prompt,
         system_instruction,
         model,
-        api_key
+        api_key,
     )
+
+
+# ============================================================
+# WORD DOCUMENT GENERATOR
+# ============================================================
+
+def create_word_document(
+    title,
+    author,
+    content,
+):
+
+    if Document is None:
+
+        raise RuntimeError(
+            "python-docx is not installed. "
+            "Run: pip install python-docx"
+        )
+
+    document = Document()
+
+    # --------------------------------------------------------
+    # TITLE
+    # --------------------------------------------------------
+
+    document.add_heading(
+        title,
+        level=0,
+    )
+
+    # --------------------------------------------------------
+    # AUTHOR
+    # --------------------------------------------------------
+
+    if author.strip():
+
+        paragraph = document.add_paragraph()
+
+        run = paragraph.add_run(
+            f"Author: {author}"
+        )
+
+        run.bold = True
+
+    document.add_paragraph()
+
+    # --------------------------------------------------------
+    # CONTENT
+    # --------------------------------------------------------
+
+    paragraphs = content.split("\n")
+
+    for paragraph_text in paragraphs:
+
+        text = paragraph_text.strip()
+
+        if not text:
+
+            document.add_paragraph()
+
+            continue
+
+        if text.startswith("# "):
+
+            document.add_heading(
+                text[2:].strip(),
+                level=1,
+            )
+
+        elif text.startswith("## "):
+
+            document.add_heading(
+                text[3:].strip(),
+                level=2,
+            )
+
+        elif text.startswith("### "):
+
+            document.add_heading(
+                text[4:].strip(),
+                level=3,
+            )
+
+        else:
+
+            document.add_paragraph(
+                text
+            )
+
+    # --------------------------------------------------------
+    # FOOTER
+    # --------------------------------------------------------
+
+    section = document.sections[0]
+
+    footer = section.footer
+
+    footer_paragraph = footer.paragraphs[0]
+
+    footer_paragraph.text = (
+        "Generated by BHAI AI | "
+        "By Engr. Bilal Mehmood"
+    )
+
+    # --------------------------------------------------------
+    # MEMORY FILE
+    # --------------------------------------------------------
+
+    file_stream = io.BytesIO()
+
+    document.save(
+        file_stream
+    )
+
+    file_stream.seek(0)
+
+    return file_stream.getvalue()
+
+
+# ============================================================
+# PDF DOCUMENT GENERATOR
+# ============================================================
+
+def create_pdf_document(
+    title,
+    author,
+    content,
+):
+
+    if A4 is None:
+
+        raise RuntimeError(
+            "reportlab is not installed. "
+            "Run: pip install reportlab"
+        )
+
+    file_stream = io.BytesIO()
+
+    pdf = SimpleDocTemplate(
+        file_stream,
+        pagesize=A4,
+        rightMargin=50,
+        leftMargin=50,
+        topMargin=50,
+        bottomMargin=50,
+    )
+
+    styles = getSampleStyleSheet()
+
+    title_style = styles["Title"]
+
+    heading_style = styles["Heading2"]
+
+    body_style = styles["BodyText"]
+
+    story = []
+
+    # --------------------------------------------------------
+    # TITLE
+    # --------------------------------------------------------
+
+    story.append(
+        Paragraph(
+            title,
+            title_style,
+        )
+    )
+
+    story.append(
+        Spacer(
+            1,
+            0.20 * inch,
+        )
+    )
+
+    # --------------------------------------------------------
+    # AUTHOR
+    # --------------------------------------------------------
+
+    if author.strip():
+
+        story.append(
+            Paragraph(
+                f"<b>Author:</b> {author}",
+                body_style,
+            )
+        )
+
+        story.append(
+            Spacer(
+                1,
+                0.20 * inch,
+            )
+        )
+
+    # --------------------------------------------------------
+    # CONTENT
+    # --------------------------------------------------------
+
+    paragraphs = content.split("\n")
+
+    for paragraph_text in paragraphs:
+
+        text = paragraph_text.strip()
+
+        if not text:
+
+            story.append(
+                Spacer(
+                    1,
+                    0.08 * inch,
+                )
+            )
+
+            continue
+
+        if text.startswith("### "):
+
+            text = text[4:]
+
+            story.append(
+                Paragraph(
+                    text,
+                    heading_style,
+                )
+            )
+
+        elif text.startswith("## "):
+
+            text = text[3:]
+
+            story.append(
+                Paragraph(
+                    text,
+                    heading_style,
+                )
+            )
+
+        elif text.startswith("# "):
+
+            text = text[2:]
+
+            story.append(
+                Paragraph(
+                    text,
+                    heading_style,
+                )
+            )
+
+        else:
+
+            # Escape basic HTML symbols
+            text = (
+                text
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+            )
+
+            story.append(
+                Paragraph(
+                    text,
+                    body_style,
+                )
+            )
+
+        story.append(
+            Spacer(
+                1,
+                0.08 * inch,
+            )
+        )
+
+    # --------------------------------------------------------
+    # FOOTER TEXT
+    # --------------------------------------------------------
+
+    story.append(
+        Spacer(
+            1,
+            0.25 * inch,
+        )
+    )
+
+    story.append(
+        Paragraph(
+            "<b>Generated by BHAI AI</b><br/>"
+            "By Engr. Bilal Mehmood",
+            body_style,
+        )
+    )
+
+    pdf.build(
+        story
+    )
+
+    file_stream.seek(0)
+
+    return file_stream.getvalue()
+
+
+# ============================================================
+# SAFE FILE NAME
+# ============================================================
+
+def safe_filename(name):
+
+    allowed = (
+        "abcdefghijklmnopqrstuvwxyz"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "0123456789"
+        "_-"
+    )
+
+    cleaned = ""
+
+    for character in name:
+
+        if character in allowed:
+
+            cleaned += character
+
+        elif character in [" ", ".", "/"]:
+
+            cleaned += "_"
+
+    if not cleaned:
+
+        cleaned = "BHAI_Document"
+
+    return cleaned
 
 
 # ============================================================
@@ -1102,14 +1417,14 @@ Do not invent important facts.
 
 st.markdown(
     '<div class="main-title">🤖 BHAI AI</div>',
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 st.markdown(
     '<div class="subtitle">'
     '20-Agent Intelligent Daily Routine Automation System'
     '</div>',
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 st.markdown(
@@ -1119,19 +1434,19 @@ st.markdown(
 <h2>🧠 BHAI — Master Agent</h2>
 
 BHAI understands your request, selects the required
-specialist agents, coordinates their work and generates
+specialist agents, coordinates their work and produces
 a final response.
 
 <br><br>
 
 <b>
-User → BHAI Chatbot → Master Agent → Specialist Agents
+User Intent → BHAI → Agent Routing → Specialist Agents
 → Validation → Final Result
 </b>
 
 </div>
 """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 
@@ -1139,15 +1454,18 @@ User → BHAI Chatbot → Master Agent → Specialist Agents
 # SIDEBAR
 # ============================================================
 
-st.sidebar.title("🤖 BHAI NAVIGATION")
+st.sidebar.title(
+    "🤖 BHAI NAVIGATION"
+)
 
 st.sidebar.caption(
     "20-Agent Intelligent Automation System"
 )
 
-# ------------------------------------------------------------
-# MODE
-# ------------------------------------------------------------
+
+# ============================================================
+# SYSTEM MODE
+# ============================================================
 
 st.sidebar.subheader(
     "⚙️ System Control"
@@ -1157,20 +1475,30 @@ mode = st.sidebar.radio(
     "Operating Mode",
     [
         "Demo Mode",
-        "OpenAI API Mode"
-    ]
+        "OpenAI API Mode",
+    ],
 )
+
+
+# ============================================================
+# MODEL
+# ============================================================
 
 model = st.sidebar.text_input(
     "OpenAI Model",
-    value="gpt-5"
+    value="gpt-5",
 )
+
+
+# ============================================================
+# MAX AGENTS
+# ============================================================
 
 max_agents = st.sidebar.slider(
     "Maximum Agents per Request",
-    1,
-    10,
-    5
+    min_value=1,
+    max_value=10,
+    value=5,
 )
 
 
@@ -1186,11 +1514,11 @@ if mode == "OpenAI API Mode":
         "🔐 API Configuration"
     )
 
-    existing_key = get_api_key()
+    detected_key = get_api_key()
 
-    if existing_key:
+    if detected_key:
 
-        api_key = existing_key
+        api_key = detected_key
 
         st.sidebar.success(
             "OpenAI API key detected."
@@ -1201,7 +1529,7 @@ if mode == "OpenAI API Mode":
         api_key = st.sidebar.text_input(
             "OpenAI API Key",
             type="password",
-            placeholder="sk-..."
+            placeholder="sk-...",
         )
 
         st.session_state.manual_api_key = (
@@ -1216,7 +1544,7 @@ else:
 
 
 # ============================================================
-# SIDEBAR NAVIGATION
+# MAIN NAVIGATION
 # ============================================================
 
 st.sidebar.divider()
@@ -1226,49 +1554,52 @@ st.sidebar.subheader(
 )
 
 navigation_options = [
+
     "🏠 BHAI Dashboard",
+
     "🧠 BHAI Master",
+
     "💬 BHAI Chatbot",
+
     "🧩 Agent Navigation",
+
     "⏰ Reminders",
+
     "📅 Deadlines",
-    "📧 Email Generator"
+
+    "📧 Email Generator",
+
+    "📄 Word / PDF Generator",
 ]
 
 page = st.sidebar.radio(
     "Go To",
-    navigation_options
+    navigation_options,
 )
 
 
 # ============================================================
-# AGENT QUICK NAVIGATION
+# DIRECT AGENT NAVIGATION
 # ============================================================
 
 st.sidebar.divider()
 
 st.sidebar.subheader(
-    "🧩 20 Specialist Agents"
+    "🧩 Direct Agent Access"
 )
 
-agent_menu = []
-
-for index, agent_name in enumerate(
-    AGENTS.keys()
-):
-
-    icon = AGENT_ICONS.get(
-        agent_name,
-        "🤖"
+agent_navigation = [
+    f"{i + 1:02d}. "
+    f"{AGENT_ICONS[name]} "
+    f"{name.replace(' Agent', '')}"
+    for i, name in enumerate(
+        AGENTS.keys()
     )
+]
 
-    agent_menu.append(
-        f"{icon} {index + 1:02d} - {agent_name.replace(' Agent', '')}"
-    )
-
-selected_agent_menu = st.sidebar.selectbox(
-    "Direct Agent Access",
-    ["None"] + agent_menu
+selected_agent_navigation = st.sidebar.selectbox(
+    "Select Agent",
+    ["None"] + agent_navigation,
 )
 
 
@@ -1293,15 +1624,16 @@ if page == "🏠 BHAI Dashboard":
 BHAI is a Master-Agent system controlling
 20 specialist agents for daily routines,
 productivity, learning, communication,
-wellness, finance, travel and entertainment.
+wellness, finance, travel, files,
+documents and entertainment.
 
 </div>
 """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     # --------------------------------------------------------
-    # DASHBOARD METRICS
+    # METRICS
     # --------------------------------------------------------
 
     c1, c2, c3, c4, c5 = st.columns(5)
@@ -1310,7 +1642,7 @@ wellness, finance, travel and entertainment.
 
         st.metric(
             "🤖 Agents",
-            "20"
+            "20",
         )
 
     with c2:
@@ -1319,7 +1651,7 @@ wellness, finance, travel and entertainment.
             "💬 Chat Messages",
             len(
                 st.session_state.chat_messages
-            )
+            ),
         )
 
     with c3:
@@ -1328,7 +1660,7 @@ wellness, finance, travel and entertainment.
             "⏰ Reminders",
             len(
                 st.session_state.reminders
-            )
+            ),
         )
 
     with c4:
@@ -1337,7 +1669,7 @@ wellness, finance, travel and entertainment.
             "📅 Deadlines",
             len(
                 st.session_state.deadlines
-            )
+            ),
         )
 
     with c5:
@@ -1346,7 +1678,7 @@ wellness, finance, travel and entertainment.
             "📧 Emails",
             len(
                 st.session_state.generated_emails
-            )
+            ),
         )
 
     st.divider()
@@ -1355,20 +1687,20 @@ wellness, finance, travel and entertainment.
         "🧩 20-Agent Network"
     )
 
-    cols = st.columns(4)
+    columns = st.columns(4)
 
-    for i, (
+    for index, (
         agent_name,
-        description
+        description,
     ) in enumerate(
         AGENTS.items()
     ):
 
-        with cols[i % 4]:
+        with columns[index % 4]:
 
             icon = AGENT_ICONS.get(
                 agent_name,
-                "🤖"
+                "🤖",
             )
 
             st.markdown(
@@ -1376,7 +1708,7 @@ wellness, finance, travel and entertainment.
 <div class="agent-card">
 
 <h4>
-{icon} {i + 1}. {agent_name}
+{icon} {index + 1}. {agent_name}
 </h4>
 
 <small>
@@ -1385,7 +1717,7 @@ wellness, finance, travel and entertainment.
 
 </div>
 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
 
@@ -1400,23 +1732,24 @@ elif page == "🧠 BHAI Master":
     )
 
     st.info(
-        "The BHAI Master understands your request "
-        "and routes it to the most relevant agents."
+        "BHAI Master analyzes your request and "
+        "selects the most relevant specialist agents."
     )
 
     master_request = st.text_area(
         "Enter your request",
+        height=160,
         placeholder=(
-            "Example: Plan my day with Python learning, "
-            "exercise, email work and chess."
+            "Example:\n"
+            "Plan my day. I need to learn Python, "
+            "exercise, prepare an email and play chess."
         ),
-        height=150
     )
 
     if st.button(
         "🚀 RUN BHAI MASTER",
         type="primary",
-        use_container_width=True
+        use_container_width=True,
     ):
 
         if not master_request.strip():
@@ -1437,27 +1770,23 @@ elif page == "🧠 BHAI Master":
         else:
 
             with st.spinner(
-                "🧠 BHAI is routing your request..."
+                "🧠 BHAI is understanding your request..."
             ):
 
                 if mode == "Demo Mode":
 
-                    selected_agents = (
-                        bhai_demo_router(
-                            master_request,
-                            max_agents
-                        )
+                    selected_agents = bhai_demo_router(
+                        master_request,
+                        max_agents,
                     )
 
                 else:
 
-                    selected_agents = (
-                        bhai_api_router(
-                            master_request,
-                            model,
-                            api_key,
-                            max_agents
-                        )
+                    selected_agents = bhai_api_router(
+                        master_request,
+                        model,
+                        api_key,
+                        max_agents,
                     )
 
             if not selected_agents:
@@ -1465,7 +1794,7 @@ elif page == "🧠 BHAI Master":
                 selected_agents = [
                     "Planner Agent",
                     "Task Agent",
-                    "Productivity Agent"
+                    "Productivity Agent",
                 ]
 
             st.session_state.last_agents = (
@@ -1473,37 +1802,29 @@ elif page == "🧠 BHAI Master":
             )
 
             st.subheader(
-                "🧩 Selected Agents"
+                "🧩 Activated Agents"
             )
 
             for agent in selected_agents:
 
-                icon = AGENT_ICONS.get(
-                    agent,
-                    "🤖"
-                )
-
                 st.success(
-                    f"{icon} {agent}"
+                    f"{AGENT_ICONS.get(agent, '🤖')} "
+                    f"{agent}"
                 )
 
             results = []
 
             progress = st.progress(0)
 
-            for i, agent_name in enumerate(
+            for index, agent_name in enumerate(
                 selected_agents
             ):
-
-                st.write(
-                    f"⚙️ Running **{agent_name}**..."
-                )
 
                 if mode == "Demo Mode":
 
                     result = run_demo_agent(
                         agent_name,
-                        master_request
+                        master_request,
                     )
 
                 else:
@@ -1512,18 +1833,18 @@ elif page == "🧠 BHAI Master":
                         agent_name,
                         master_request,
                         model,
-                        api_key
+                        api_key,
                     )
 
                 results.append(
                     (
                         agent_name,
-                        result
+                        result,
                     )
                 )
 
                 progress.progress(
-                    (i + 1)
+                    (index + 1)
                     / len(selected_agents)
                 )
 
@@ -1532,17 +1853,15 @@ elif page == "🧠 BHAI Master":
             )
 
             with st.spinner(
-                "🧠 BHAI is synthesizing..."
+                "🧠 BHAI is synthesizing the final result..."
             ):
 
-                final_response = (
-                    bhai_final_summary(
-                        master_request,
-                        results,
-                        mode,
-                        model,
-                        api_key
-                    )
+                final_response = bhai_final_summary(
+                    master_request,
+                    results,
+                    mode,
+                    model,
+                    api_key,
                 )
 
             st.divider()
@@ -1574,44 +1893,42 @@ elif page == "💬 BHAI Chatbot":
 
 <br><br>
 
-BHAI remembers the recent conversation and
-selects the appropriate specialist agents.
+BHAI remembers recent conversation context
+and automatically connects your request
+with the appropriate specialist agents.
 
 <br><br>
 
 <b>
-Chat → BHAI → Agent Routing → 20 Agents → Final Response
+User → Chatbot → Master Agent → Specialist Agents
+→ Final Response
 </b>
 
 </div>
 """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
-    top1, top2 = st.columns(
-        [4, 1]
+    col1, col2 = st.columns(
+        [5, 1]
     )
 
-    with top1:
+    with col1:
 
         st.subheader(
             "💬 Conversation"
         )
 
-    with top2:
+    with col2:
 
         if st.button(
-            "🗑️ Clear Chat",
-            use_container_width=True
+            "🗑️ Clear",
+            use_container_width=True,
         ):
 
             st.session_state.chat_messages = []
 
             st.rerun()
-
-    # --------------------------------------------------------
-    # CHAT HISTORY
-    # --------------------------------------------------------
 
     if not st.session_state.chat_messages:
 
@@ -1625,16 +1942,18 @@ Chat → BHAI → Agent Routing → 20 Agents → Final Response
 
 I control **20 specialist agents**.
 
-Try:
+Try asking:
 
-**"Plan my day with Python learning,
-exercise and chess."**
+> Plan my day with Python learning,
+> exercise and chess.
 
-or
+or:
 
-**"Prepare my meeting agenda and email."**
+> Prepare a meeting agenda and professional email.
 
-I will select the appropriate agents automatically.
+or:
+
+> Create a research plan and save it as a document.
 """
             )
 
@@ -1654,20 +1973,15 @@ I will select the appropriate agents automatically.
 
                 agents = message.get(
                     "agents",
-                    []
+                    [],
                 )
 
                 if agents:
 
                     st.caption(
                         "🧩 Activated Agents: "
-                        +
-                        ", ".join(agents)
+                        + ", ".join(agents)
                     )
-
-    # --------------------------------------------------------
-    # CHAT INPUT
-    # --------------------------------------------------------
 
     chat_request = st.chat_input(
         "Ask BHAI anything..."
@@ -1689,7 +2003,7 @@ I will select the appropriate agents automatically.
             st.session_state.chat_messages.append(
                 {
                     "role": "user",
-                    "content": chat_request
+                    "content": chat_request,
                 }
             )
 
@@ -1712,13 +2026,13 @@ I will select the appropriate agents automatically.
                     (
                         selected_agents,
                         results,
-                        final_response
+                        final_response,
                     ) = process_bhai_chat(
                         chat_request,
                         mode,
                         model,
                         api_key,
-                        max_agents
+                        max_agents,
                     )
 
                 st.markdown(
@@ -1727,8 +2041,7 @@ I will select the appropriate agents automatically.
 
                 st.caption(
                     "🧩 Activated Agents: "
-                    +
-                    ", ".join(
+                    + ", ".join(
                         selected_agents
                     )
                 )
@@ -1737,7 +2050,7 @@ I will select the appropriate agents automatically.
                 {
                     "role": "assistant",
                     "content": final_response,
-                    "agents": selected_agents
+                    "agents": selected_agents,
                 }
             )
 
@@ -1761,18 +2074,18 @@ elif page == "🧩 Agent Navigation":
     )
 
     st.info(
-        "Select a specialist agent below and send "
-        "a direct request to that agent."
+        "Select any specialist agent and send "
+        "a direct request."
     )
 
     selected_agent = st.selectbox(
         "Select Specialist Agent",
-        list(AGENTS.keys())
+        list(AGENTS.keys()),
     )
 
     icon = AGENT_ICONS.get(
         selected_agent,
-        "🤖"
+        "🤖",
     )
 
     st.markdown(
@@ -1787,22 +2100,21 @@ elif page == "🧩 Agent Navigation":
 
 </div>
 """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     agent_request = st.text_area(
         f"Request for {selected_agent}",
+        height=150,
         placeholder=(
-            f"Example: Ask {selected_agent} "
-            "to help me..."
+            f"Ask {selected_agent} to help you..."
         ),
-        height=150
     )
 
     if st.button(
         f"🚀 RUN {selected_agent}",
         type="primary",
-        use_container_width=True
+        use_container_width=True,
     ):
 
         if not agent_request.strip():
@@ -1830,7 +2142,7 @@ elif page == "🧩 Agent Navigation":
 
                     result = run_demo_agent(
                         selected_agent,
-                        agent_request
+                        agent_request,
                     )
 
                 else:
@@ -1839,7 +2151,7 @@ elif page == "🧩 Agent Navigation":
                         selected_agent,
                         agent_request,
                         model,
-                        api_key
+                        api_key,
                     )
 
             st.success(
@@ -1861,13 +2173,9 @@ elif page == "🧩 Agent Navigation":
             st.session_state.last_results = [
                 (
                     selected_agent,
-                    result
+                    result,
                 )
             ]
-
-    # --------------------------------------------------------
-    # AGENT GRID
-    # --------------------------------------------------------
 
     st.divider()
 
@@ -1875,20 +2183,20 @@ elif page == "🧩 Agent Navigation":
         "🗂️ All 20 Agents"
     )
 
-    cols = st.columns(4)
+    columns = st.columns(4)
 
-    for i, (
+    for index, (
         agent_name,
-        description
+        description,
     ) in enumerate(
         AGENTS.items()
     ):
 
-        with cols[i % 4]:
+        with columns[index % 4]:
 
             icon = AGENT_ICONS.get(
                 agent_name,
-                "🤖"
+                "🤖",
             )
 
             st.markdown(
@@ -1896,7 +2204,7 @@ elif page == "🧩 Agent Navigation":
 <div class="agent-card">
 
 <b>
-{icon} {i + 1:02d}. {agent_name}
+{icon} {index + 1:02d}. {agent_name}
 </b>
 
 <br><br>
@@ -1907,7 +2215,7 @@ elif page == "🧩 Agent Navigation":
 
 </div>
 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
 
@@ -1929,12 +2237,12 @@ elif page == "⏰ Reminders":
             "Reminder",
             placeholder=(
                 "Example: Submit AI workshop proposal"
-            )
+            ),
         )
 
         reminder_date = st.date_input(
             "Reminder Date",
-            value=date.today()
+            value=date.today(),
         )
 
         reminder_time = st.time_input(
@@ -1946,15 +2254,15 @@ elif page == "⏰ Reminders":
             [
                 "High",
                 "Medium",
-                "Low"
-            ]
+                "Low",
+            ],
         )
 
-        submit = st.form_submit_button(
+        submitted = st.form_submit_button(
             "➕ Add Reminder"
         )
 
-        if submit:
+        if submitted:
 
             if reminder_title.strip():
 
@@ -1962,11 +2270,11 @@ elif page == "⏰ Reminders":
                     reminder_title,
                     reminder_date,
                     reminder_time,
-                    reminder_priority
+                    reminder_priority,
                 )
 
                 st.success(
-                    "Reminder added successfully."
+                    "Reminder added."
                 )
 
             else:
@@ -1983,7 +2291,7 @@ elif page == "⏰ Reminders":
 
     if st.session_state.reminders:
 
-        for i, reminder in enumerate(
+        for index, reminder in enumerate(
             st.session_state.reminders
         ):
 
@@ -2010,16 +2318,16 @@ elif page == "⏰ Reminders":
 
 </div>
 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
             if st.button(
-                f"🗑️ Delete Reminder {i + 1}",
-                key=f"rem_{i}"
+                f"🗑️ Delete Reminder {index + 1}",
+                key=f"delete_reminder_{index}",
             ):
 
                 st.session_state.reminders.pop(
-                    i
+                    index
                 )
 
                 st.rerun()
@@ -2049,12 +2357,12 @@ elif page == "📅 Deadlines":
             "Deadline",
             placeholder=(
                 "Example: Submit Python project"
-            )
+            ),
         )
 
         deadline_date = st.date_input(
             "Deadline Date",
-            value=date.today()
+            value=date.today(),
         )
 
         deadline_priority = st.selectbox(
@@ -2063,20 +2371,22 @@ elif page == "📅 Deadlines":
                 "Critical",
                 "High",
                 "Medium",
-                "Low"
-            ]
+                "Low",
+            ],
         )
 
         deadline_notes = st.text_area(
             "Notes",
-            placeholder="Additional information..."
+            placeholder=(
+                "Additional information..."
+            ),
         )
 
-        submit = st.form_submit_button(
+        submitted = st.form_submit_button(
             "➕ Add Deadline"
         )
 
-        if submit:
+        if submitted:
 
             if deadline_title.strip():
 
@@ -2084,11 +2394,11 @@ elif page == "📅 Deadlines":
                     deadline_title,
                     deadline_date,
                     deadline_priority,
-                    deadline_notes
+                    deadline_notes,
                 )
 
                 st.success(
-                    "Deadline added successfully."
+                    "Deadline added."
                 )
 
             else:
@@ -2105,7 +2415,7 @@ elif page == "📅 Deadlines":
 
     if st.session_state.deadlines:
 
-        for i, deadline in enumerate(
+        for index, deadline in enumerate(
             st.session_state.deadlines
         ):
 
@@ -2133,16 +2443,16 @@ elif page == "📅 Deadlines":
 
 </div>
 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
             if st.button(
-                f"🗑️ Delete Deadline {i + 1}",
-                key=f"deadline_{i}"
+                f"🗑️ Delete Deadline {index + 1}",
+                key=f"delete_deadline_{index}",
             ):
 
                 st.session_state.deadlines.pop(
-                    i
+                    index
                 )
 
                 st.rerun()
@@ -2166,14 +2476,16 @@ elif page == "📧 Email Generator":
 
     recipient = st.text_input(
         "Recipient Name / Department",
-        placeholder="Example: Director / HR Department"
+        placeholder=(
+            "Example: Director / HR Department"
+        ),
     )
 
     purpose = st.text_input(
         "Email Purpose",
         placeholder=(
             "Example: Request approval for AI workshop"
-        )
+        ),
     )
 
     tone = st.selectbox(
@@ -2184,23 +2496,22 @@ elif page == "📧 Email Generator":
             "Friendly",
             "Academic",
             "Official",
-            "Short and Direct"
-        ]
+            "Short and Direct",
+        ],
     )
 
     details = st.text_area(
         "Additional Details",
         height=160,
         placeholder=(
-            "Enter the important points "
-            "you want to include."
-        )
+            "Enter important points..."
+        ),
     )
 
     if st.button(
         "📧 GENERATE EMAIL",
         type="primary",
-        use_container_width=True
+        use_container_width=True,
     ):
 
         if not recipient.strip():
@@ -2237,7 +2548,7 @@ elif page == "📧 Email Generator":
                     details,
                     mode,
                     model,
-                    api_key
+                    api_key,
                 )
 
             st.session_state.generated_emails.append(
@@ -2250,7 +2561,7 @@ elif page == "📧 Email Generator":
 
             st.markdown(
                 '<div class="email-box">',
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
             st.markdown(
@@ -2258,60 +2569,358 @@ elif page == "📧 Email Generator":
             )
 
             st.markdown(
-                '</div>',
-                unsafe_allow_html=True
+                "</div>",
+                unsafe_allow_html=True,
             )
 
 
 # ============================================================
-# DIRECT AGENT QUICK ACCESS
+# WORD / PDF GENERATOR
+# ============================================================
+
+elif page == "📄 Word / PDF Generator":
+
+    st.header(
+        "📄 BHAI AI Word / PDF Generator"
+    )
+
+    st.markdown(
+        """
+<div class="bhai-box">
+
+<h2>📄 Intelligent Document Generator</h2>
+
+Create professional documents using BHAI AI.
+
+<br><br>
+
+📝 Manual Content
+&nbsp;&nbsp; | &nbsp;&nbsp;
+🤖 AI Content
+&nbsp;&nbsp; | &nbsp;&nbsp;
+📝 Word
+&nbsp;&nbsp; | &nbsp;&nbsp;
+📕 PDF
+
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+    # --------------------------------------------------------
+    # DOCUMENT INFORMATION
+    # --------------------------------------------------------
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        document_title = st.text_input(
+            "📌 Document Title",
+            value=st.session_state.document_title,
+            placeholder=(
+                "Example: AI Workshop Proposal"
+            ),
+        )
+
+        st.session_state.document_title = (
+            document_title
+        )
+
+    with col2:
+
+        document_author = st.text_input(
+            "👤 Author",
+            value=st.session_state.document_author,
+        )
+
+        st.session_state.document_author = (
+            document_author
+        )
+
+    # --------------------------------------------------------
+    # CONTENT CREATION METHOD
+    # --------------------------------------------------------
+
+    content_mode = st.radio(
+        "Content Creation Method",
+        [
+            "✍️ Write Content Manually",
+            "🤖 Generate Content with BHAI AI",
+        ],
+        horizontal=True,
+    )
+
+    # ========================================================
+    # MANUAL MODE
+    # ========================================================
+
+    if content_mode == "✍️ Write Content Manually":
+
+        manual_content = st.text_area(
+            "📝 Document Content",
+            height=350,
+            value=st.session_state.generated_document_content,
+            placeholder=(
+                "Write your document content here..."
+            ),
+        )
+
+        st.session_state.generated_document_content = (
+            manual_content
+        )
+
+    # ========================================================
+    # AI MODE
+    # ========================================================
+
+    else:
+
+        ai_request = st.text_area(
+            "🤖 Describe the document you want",
+            height=180,
+            placeholder=(
+                "Example:\n"
+                "Create a formal proposal for a "
+                "3-day Python and AI workshop for "
+                "engineering students."
+            ),
+        )
+
+        if st.button(
+            "🤖 GENERATE DOCUMENT CONTENT",
+            type="primary",
+            use_container_width=True,
+        ):
+
+            if not ai_request.strip():
+
+                st.warning(
+                    "Please describe the document."
+                )
+
+            elif (
+                mode == "OpenAI API Mode"
+                and not api_key
+            ):
+
+                st.error(
+                    "OpenAI API key is required."
+                )
+
+            else:
+
+                with st.spinner(
+                    "🧠 BHAI is creating document content..."
+                ):
+
+                    if mode == "Demo Mode":
+
+                        generated_content = f"""
+# {document_title or "BHAI AI Document"}
+
+## Introduction
+
+This document was generated by BHAI AI
+in Demo Mode.
+
+## Purpose
+
+{ai_request}
+
+## Main Content
+
+BHAI AI has processed the document
+requirements and prepared structured
+content for Word and PDF generation.
+
+## Conclusion
+
+The document is ready for export.
+
+Generated by BHAI AI.
+By Engr. Bilal Mehmood.
+"""
+
+                    else:
+
+                        generated_content = call_openai(
+                            ai_request,
+                            """
+You are the BHAI AI Document Agent.
+
+Create professional document content
+based on the user's request.
+
+Use:
+
+# Main Heading
+
+## Section Heading
+
+### Subsection
+
+Write clear paragraphs.
+
+The output should be suitable for
+a professional Word and PDF document.
+
+Do not invent important facts.
+""",
+                            model,
+                            api_key,
+                        )
+
+                st.session_state.generated_document_content = (
+                    generated_content
+                )
+
+                st.success(
+                    "✅ Document content generated."
+                )
+
+    # ========================================================
+    # DOCUMENT PREVIEW
+    # ========================================================
+
+    document_content = (
+        st.session_state.generated_document_content
+    )
+
+    if document_content.strip():
+
+        st.divider()
+
+        st.subheader(
+            "👁️ Document Preview / Edit"
+        )
+
+        edited_content = st.text_area(
+            "Edit document content before download",
+            value=document_content,
+            height=400,
+        )
+
+        st.session_state.generated_document_content = (
+            edited_content
+        )
+
+        document_content = edited_content
+
+        # ----------------------------------------------------
+        # CREATE FILES
+        # ----------------------------------------------------
+
+        try:
+
+            word_file = create_word_document(
+                document_title or "BHAI Document",
+                document_author,
+                document_content,
+            )
+
+            pdf_file = create_pdf_document(
+                document_title or "BHAI Document",
+                document_author,
+                document_content,
+            )
+
+            st.divider()
+
+            st.subheader(
+                "📥 Download Files"
+            )
+
+            file_col1, file_col2 = st.columns(2)
+
+            filename = safe_filename(
+                document_title
+                or "BHAI_Document"
+            )
+
+            with file_col1:
+
+                st.download_button(
+                    label="📝 Download Word (.docx)",
+                    data=word_file,
+                    file_name=f"{filename}.docx",
+                    mime=(
+                        "application/"
+                        "vnd.openxmlformats-officedocument"
+                        ".wordprocessingml.document"
+                    ),
+                    use_container_width=True,
+                )
+
+            with file_col2:
+
+                st.download_button(
+                    label="📕 Download PDF (.pdf)",
+                    data=pdf_file,
+                    file_name=f"{filename}.pdf",
+                    mime="application/pdf",
+                    use_container_width=True,
+                )
+
+            st.success(
+                "✅ Word and PDF files are ready."
+            )
+
+        except Exception as error:
+
+            st.error(
+                f"Document generation error: {error}"
+            )
+
+    else:
+
+        st.info(
+            "Enter or generate document content "
+            "to enable Word/PDF downloads."
+        )
+
+
+# ============================================================
+# DIRECT AGENT ACCESS FROM SIDEBAR
 # ============================================================
 
 if (
-    selected_agent_menu != "None"
+    selected_agent_navigation != "None"
     and page == "🏠 BHAI Dashboard"
 ):
 
-    selected_number = int(
-        selected_agent_menu.split("-")[0]
-        .replace("🧠", "")
-        .replace("⏰", "")
-        .replace("📅", "")
-        .replace("✅", "")
-        .replace("⚡", "")
-        .replace("📚", "")
-        .replace("🔬", "")
-        .replace("💬", "")
-        .replace("📧", "")
-        .replace("🤝", "")
-        .replace("❤️", "")
-        .replace("🏃", "")
-        .replace("💰", "")
-        .replace("🛒", "")
-        .replace("✈️", "")
-        .replace("📰", "")
-        .replace("📝", "")
-        .replace("📁", "")
-        .replace("🏠", "")
-        .replace("🎮", "")
-        .strip()
-    )
+    # Extract agent number safely
+    try:
+
+        agent_number = int(
+            selected_agent_navigation[
+                :2
+            ]
+        )
+
+    except Exception:
+
+        agent_number = 0
 
     agent_names = list(
         AGENTS.keys()
     )
 
-    if 1 <= selected_number <= 20:
+    if 1 <= agent_number <= 20:
 
         direct_agent = agent_names[
-            selected_number - 1
+            agent_number - 1
         ]
+
+        icon = AGENT_ICONS.get(
+            direct_agent,
+            "🤖",
+        )
 
         st.divider()
 
         st.header(
-            f"{AGENT_ICONS[direct_agent]} "
-            f"{direct_agent}"
+            f"{icon} {direct_agent}"
         )
 
         st.info(
@@ -2320,17 +2929,17 @@ if (
 
         direct_request = st.text_area(
             "Direct Agent Request",
+            height=130,
             placeholder=(
                 f"Ask {direct_agent} to do something..."
             ),
-            height=120,
-            key="direct_agent_request"
+            key="direct_agent_request",
         )
 
         if st.button(
             "🚀 RUN DIRECT AGENT",
             type="primary",
-            key="direct_agent_button"
+            key="direct_agent_button",
         ):
 
             if not direct_request.strip():
@@ -2356,22 +2965,18 @@ if (
 
                     if mode == "Demo Mode":
 
-                        direct_result = (
-                            run_demo_agent(
-                                direct_agent,
-                                direct_request
-                            )
+                        direct_result = run_demo_agent(
+                            direct_agent,
+                            direct_request,
                         )
 
                     else:
 
-                        direct_result = (
-                            run_api_agent(
-                                direct_agent,
-                                direct_request,
-                                model,
-                                api_key
-                            )
+                        direct_result = run_api_agent(
+                            direct_agent,
+                            direct_request,
+                            model,
+                            api_key,
                         )
 
                 st.subheader(
@@ -2381,6 +2986,17 @@ if (
                 st.markdown(
                     direct_result
                 )
+
+                st.session_state.last_agents = [
+                    direct_agent
+                ]
+
+                st.session_state.last_results = [
+                    (
+                        direct_agent,
+                        direct_result,
+                    )
+                ]
 
 
 # ============================================================
@@ -2399,30 +3015,28 @@ if st.session_state.last_agents:
         "Recently activated agents:"
     )
 
-    cols = st.columns(
-        min(
-            len(
-                st.session_state.last_agents
-            ),
-            5
-        )
+    number_of_columns = min(
+        len(
+            st.session_state.last_agents
+        ),
+        5,
     )
 
-    for i, agent in enumerate(
+    columns = st.columns(
+        number_of_columns
+    )
+
+    for index, agent in enumerate(
         st.session_state.last_agents
     ):
 
-        with cols[
-            i % len(cols)
+        with columns[
+            index % number_of_columns
         ]:
 
-            icon = AGENT_ICONS.get(
-                agent,
-                "🤖"
-            )
-
             st.success(
-                f"{icon} {agent}"
+                f"{AGENT_ICONS.get(agent, '🤖')} "
+                f"{agent}"
             )
 
 
@@ -2438,18 +3052,27 @@ st.markdown(
 
 🤖 <b>BHAI AI</b>
 
-<br>
+<br><br>
 
 20-Agent Intelligent Daily Routine Automation System
 
 <br><br>
 
-🧠 Master Agent |
-💬 AI Chatbot |
-🧩 20 Specialist Agents |
-⏰ Reminders |
-📅 Deadlines |
-📧 Email Generator
+🧠 Master Agent
+&nbsp; | &nbsp;
+💬 AI Chatbot
+&nbsp; | &nbsp;
+🧩 20 Specialist Agents
+&nbsp; | &nbsp;
+📄 Word
+&nbsp; | &nbsp;
+📕 PDF
+&nbsp; | &nbsp;
+⏰ Reminders
+&nbsp; | &nbsp;
+📅 Deadlines
+&nbsp; | &nbsp;
+📧 Email
 
 <br><br>
 
@@ -2457,5 +3080,5 @@ st.markdown(
 
 </div>
 """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
