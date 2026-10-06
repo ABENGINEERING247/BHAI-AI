@@ -14,7 +14,7 @@ except ImportError:
 # ============================================================
 
 st.set_page_config(
-    page_title="BHAI - 20 Agent AI",
+    page_title="BHAI AI - 20 Agent System",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -43,9 +43,13 @@ st.markdown("""
 }
 
 .bhai-box {
-    padding: 22px;
+    padding: 24px;
     border-radius: 16px;
-    background: linear-gradient(135deg, #102a43, #1f5f8b);
+    background: linear-gradient(
+        135deg,
+        #102a43,
+        #1f5f8b
+    );
     color: white;
     margin-bottom: 20px;
     box-shadow: 0 5px 20px rgba(0,0,0,0.12);
@@ -57,31 +61,19 @@ st.markdown("""
     border: 1px solid #ddd;
     margin-bottom: 10px;
     background-color: #fafafa;
-    min-height: 90px;
+    min-height: 95px;
 }
 
 .agent-card:hover {
     border-color: #1f5f8b;
 }
 
-.status-success {
-    padding: 10px;
-    border-radius: 8px;
-    background-color: #e8f5e9;
-    color: #1b5e20;
-}
-
-.status-api {
-    padding: 10px;
-    border-radius: 8px;
-    background-color: #e3f2fd;
-    color: #0d47a1;
-}
-
-.footer {
-    text-align: center;
-    padding: 30px;
-    color: #777;
+.chat-info {
+    padding: 15px;
+    border-radius: 12px;
+    background-color: #f4f8fb;
+    border: 1px solid #d5e4f0;
+    margin-bottom: 15px;
 }
 
 .reminder-card {
@@ -108,20 +100,23 @@ st.markdown("""
     margin-bottom: 10px;
 }
 
-.chat-info {
-    padding: 12px;
-    border-radius: 10px;
-    background-color: #f4f8fb;
-    border: 1px solid #d5e4f0;
-    margin-bottom: 15px;
-}
-
-.routing-box {
+.navigation-box {
     padding: 12px;
     border-radius: 10px;
     background-color: #eef7ff;
     border: 1px solid #90caf9;
-    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.footer {
+    text-align: center;
+    padding: 30px;
+    color: #777;
+}
+
+.small-text {
+    font-size: 13px;
+    color: #666;
 }
 
 </style>
@@ -138,7 +133,7 @@ AGENTS = {
         "Plans the user's day and sets priorities.",
 
     "Reminder Agent":
-        "Creates and organizes reminders and recurring routine items.",
+        "Creates and organizes reminders and recurring routines.",
 
     "Calendar Agent":
         "Plans events, meetings and time blocks.",
@@ -150,16 +145,16 @@ AGENTS = {
         "Improves focus, work routines and productivity.",
 
     "Learning Agent":
-        "Creates study and learning plans.",
+        "Creates study, education and learning plans.",
 
     "Research Agent":
-        "Organizes research questions and research tasks.",
+        "Organizes research questions, literature and research tasks.",
 
     "Communication Agent":
         "Plans and drafts communication activities.",
 
     "Email Agent":
-        "Generates professional emails and email-related task plans.",
+        "Generates professional emails and email-related tasks.",
 
     "Meeting Agent":
         "Creates meeting agendas, minutes and follow-up tasks.",
@@ -186,13 +181,42 @@ AGENTS = {
         "Structures notes, ideas and knowledge.",
 
     "File Agent":
-        "Organizes file and document tasks.",
+        "Organizes files and document tasks.",
 
     "Home Agent":
-        "Organizes household and daily home routines.",
+        "Organizes household and home routines.",
 
     "Entertainment Agent":
-        "Plans games, hobbies and leisure activities."
+        "Plans games, hobbies, movies, music and leisure activities."
+}
+
+
+# ============================================================
+# AGENT ICONS
+# ============================================================
+
+AGENT_ICONS = {
+
+    "Planner Agent": "🧠",
+    "Reminder Agent": "⏰",
+    "Calendar Agent": "📅",
+    "Task Agent": "✅",
+    "Productivity Agent": "⚡",
+    "Learning Agent": "📚",
+    "Research Agent": "🔬",
+    "Communication Agent": "💬",
+    "Email Agent": "📧",
+    "Meeting Agent": "🤝",
+    "Health Agent": "❤️",
+    "Fitness Agent": "🏃",
+    "Finance Agent": "💰",
+    "Shopping Agent": "🛒",
+    "Travel Agent": "✈️",
+    "News Agent": "📰",
+    "Notes Agent": "📝",
+    "File Agent": "📁",
+    "Home Agent": "🏠",
+    "Entertainment Agent": "🎮"
 }
 
 
@@ -204,10 +228,10 @@ KEYWORD_ROUTING = {
 
     "Planner Agent": [
         "plan",
-        "day",
         "daily",
-        "schedule",
+        "day",
         "routine",
+        "schedule",
         "organize my day"
     ],
 
@@ -221,8 +245,8 @@ KEYWORD_ROUTING = {
 
     "Calendar Agent": [
         "calendar",
-        "event",
         "appointment",
+        "event",
         "meeting time",
         "schedule meeting"
     ],
@@ -231,23 +255,24 @@ KEYWORD_ROUTING = {
         "task",
         "todo",
         "to-do",
-        "work",
-        "action item"
+        "action item",
+        "work"
     ],
 
     "Productivity Agent": [
         "productive",
-        "focus",
         "productivity",
+        "focus",
         "time management"
     ],
 
     "Learning Agent": [
         "learn",
+        "learning",
         "study",
-        "course",
         "python",
         "education",
+        "course",
         "training",
         "class"
     ],
@@ -256,8 +281,8 @@ KEYWORD_ROUTING = {
         "research",
         "paper",
         "literature",
-        "researcher",
         "journal",
+        "researcher",
         "publication"
     ],
 
@@ -341,6 +366,7 @@ KEYWORD_ROUTING = {
 
     "File Agent": [
         "file",
+        "files",
         "document",
         "folder",
         "pdf",
@@ -372,9 +398,6 @@ KEYWORD_ROUTING = {
 # SESSION STATE
 # ============================================================
 
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-
 if "chat_messages" not in st.session_state:
     st.session_state.chat_messages = []
 
@@ -398,7 +421,7 @@ if "manual_api_key" not in st.session_state:
 
 
 # ============================================================
-# API KEY
+# OPENAI API KEY
 # ============================================================
 
 def get_api_key():
@@ -432,7 +455,7 @@ def get_api_key():
 
 
 # ============================================================
-# OPENAI API FUNCTION
+# OPENAI API CALL
 # ============================================================
 
 def call_openai(
@@ -442,11 +465,11 @@ def call_openai(
     api_key
 ):
 
-    if not OpenAI:
+    if OpenAI is None:
 
         return (
             "OpenAI package is not installed.\n\n"
-            "Run:\n"
+            "Please run:\n"
             "pip install openai"
         )
 
@@ -472,7 +495,7 @@ def call_openai(
 
         return (
             "OpenAI API Error:\n"
-            f"{str(e)}"
+            + str(e)
         )
 
 
@@ -482,7 +505,7 @@ def call_openai(
 
 def bhai_demo_router(
     user_request,
-    max_agents=5
+    max_agents
 ):
 
     text = user_request.lower()
@@ -526,8 +549,9 @@ def bhai_api_router(
 ):
 
     agent_list = "\n".join(
-        f"- {name}: {description}"
-        for name, description in AGENTS.items()
+        f"{i + 1}. {name}: {description}"
+        for i, (name, description)
+        in enumerate(AGENTS.items())
     )
 
     system_instruction = f"""
@@ -541,31 +565,31 @@ H = Helpful
 A = AI
 I = Intelligent
 
-You are the MASTER AGENT of a
-20-agent daily routine intelligent
-automation system.
-
-Your job is to understand the user's
-request and select the most relevant
-specialist agents.
+You are the MASTER AGENT controlling
+20 specialist agents.
 
 AVAILABLE AGENTS:
 
 {agent_list}
 
+USER REQUEST:
+
+{user_request}
+
 RULES:
 
-1. Select only genuinely relevant agents.
-2. Select maximum {max_agents} agents.
-3. For general daily planning use:
-   Planner Agent,
-   Task Agent,
-   Productivity Agent.
-4. Return ONLY exact agent names.
-5. Separate agent names using commas.
-6. Do not add explanations.
+1. Understand the user's intent.
+2. Select only genuinely relevant agents.
+3. Maximum {max_agents} agents.
+4. Use multiple agents when the request
+   contains multiple requirements.
+5. Return ONLY exact agent names.
+6. Separate names with commas.
 7. Never invent an agent.
-8. Use the user's complete request as context.
+8. Do not provide explanations.
+9. If the request is general daily planning,
+   use Planner Agent, Task Agent and
+   Productivity Agent.
 
 """
 
@@ -590,7 +614,7 @@ RULES:
 
 
 # ============================================================
-# DEMO SPECIALIST AGENTS
+# DEMO AGENT EXECUTION
 # ============================================================
 
 def run_demo_agent(
@@ -601,36 +625,35 @@ def run_demo_agent(
     demo_responses = {
 
         "Planner Agent":
-            f"Create a priority-based daily plan for: "
+            f"Create a priority-based daily plan for:\n"
             f"{user_request}",
 
         "Reminder Agent":
             "Create reminders for important tasks, "
-            "meetings, learning sessions and daily routines.",
+            "meetings, learning sessions and routines.",
 
         "Calendar Agent":
-            "Allocate focused work blocks, meetings "
-            "and personal time.",
+            "Allocate meetings, appointments, focused "
+            "work blocks and personal time.",
 
         "Task Agent":
-            "Break the user's request into small "
-            "actionable tasks.",
+            "Break the request into small actionable tasks.",
 
         "Productivity Agent":
-            "Use focused work sessions with short breaks "
-            "and priority management.",
+            "Use priority management, focused work "
+            "sessions and short breaks.",
 
         "Learning Agent":
-            "Reserve a learning session and define "
-            "today's learning objective.",
+            "Create a structured learning session "
+            "with objectives and study time.",
 
         "Research Agent":
-            "Define question → collect sources → "
-            "analyze → summarize.",
+            "Define research question → sources → "
+            "analysis → summary.",
 
         "Communication Agent":
-            "Identify recipient, purpose and required "
-            "communication.",
+            "Identify recipient, purpose and "
+            "communication requirements.",
 
         "Email Agent":
             "Prepare subject → greeting → message → "
@@ -641,42 +664,43 @@ def run_demo_agent(
             "action items.",
 
         "Health Agent":
-            "Hydration, breaks, sleep routine and "
-            "general wellbeing.",
+            "Include hydration, breaks, sleep and "
+            "general wellbeing activities.",
 
         "Fitness Agent":
-            "Walking, stretching and suitable "
-            "daily activity.",
+            "Create suitable walking, stretching "
+            "or exercise activities.",
 
         "Finance Agent":
-            "Record expenses, review budget and "
-            "organize financial tasks.",
+            "Organize expenses, budget and "
+            "financial priorities.",
 
         "Shopping Agent":
-            "Create a priority shopping list and "
-            "separate urgent items.",
+            "Create and prioritize the required "
+            "shopping list.",
 
         "Travel Agent":
-            "Itinerary → transport → accommodation "
-            "→ checklist.",
+            "Create itinerary → transport → "
+            "accommodation → checklist.",
 
         "News Agent":
-            "Reserve time for reviewing trusted "
-            "news sources.",
+            "Create a routine for reviewing "
+            "trusted news sources.",
 
         "Notes Agent":
-            "Capture idea → organize → tag → review.",
+            "Capture → organize → categorize → review.",
 
         "File Agent":
-            "Organize documents into logical folders.",
+            "Organize documents and files into "
+            "logical folders.",
 
         "Home Agent":
-            "Prioritize cleaning, maintenance and "
-            "household tasks.",
+            "Prioritize household cleaning, "
+            "maintenance and home activities.",
 
         "Entertainment Agent":
-            "Select a hobby, game, movie, music "
-            "or chess activity."
+            "Plan suitable games, hobbies, movies, "
+            "music or chess time."
     }
 
     return (
@@ -706,14 +730,15 @@ def run_api_agent(
 
     system_instruction = f"""
 
-You are the {agent_name}.
+You are the specialist:
 
-YOUR RESPONSIBILITY:
+{agent_name}
+
+RESPONSIBILITY:
 
 {description}
 
-You are a specialist controlled
-by the master agent BHAI.
+You operate under the BHAI Master Agent.
 
 USER REQUEST:
 
@@ -721,13 +746,13 @@ USER REQUEST:
 
 RULES:
 
-1. Give practical and concise results.
-2. Do not claim external actions were
-   performed unless a real integration exists.
-3. Clearly identify proposed actions.
-4. Return structured information.
-5. Do not override BHAI.
-6. Do not invent unavailable information.
+1. Give practical results.
+2. Be concise but useful.
+3. Structure the response clearly.
+4. Do not claim external actions were completed.
+5. Only propose actions that require integrations.
+6. Do not override the BHAI Master Agent.
+7. Do not invent facts.
 
 """
 
@@ -761,15 +786,17 @@ def bhai_final_summary(
         return f"""
 ### 🤖 BHAI FINAL RESPONSE
 
-**Request:** {user_request}
+**Request**
 
-**Activated Agents:**
+{user_request}
+
+### 🧩 Activated Agents
 
 {", ".join(
     name for name, _ in results
 )}
 
-### Combined Plan
+### 📋 Combined Result
 
 {combined}
 
@@ -784,23 +811,20 @@ and does not perform external actions.
 
     system_instruction = """
 
-You are BHAI, the master agent.
+You are BHAI, the MASTER AGENT.
 
-Combine specialist outputs into one
-clear and useful final response.
+Combine the specialist outputs into one
+clear final response.
 
-Clearly distinguish:
+The response must:
 
-- Recommendations
-- Planned actions
-- Completed actions
-
-Never claim an external action was
-performed unless an actual integration
-exists.
-
-Keep the response practical,
-organized and easy to understand.
+1. Address the user's original request.
+2. Combine useful information from agents.
+3. Avoid unnecessary repetition.
+4. Clearly distinguish recommendations,
+   planned actions and completed actions.
+5. Never claim an external action was
+   performed unless an actual integration exists.
 
 """
 
@@ -838,45 +862,31 @@ def process_bhai_chat(
     max_agents
 ):
 
-    # --------------------------------------------------------
-    # CONVERSATION CONTEXT
-    # --------------------------------------------------------
+    context = ""
 
-    conversation_context = ""
-
-    recent_messages = (
+    for message in (
         st.session_state.chat_messages[-10:]
-    )
+    ):
 
-    for message in recent_messages:
-
-        role = message.get(
-            "role",
-            "user"
-        )
-
-        content = message.get(
-            "content",
-            ""
-        )
-
-        conversation_context += (
-            f"{role.upper()}: "
-            f"{content}\n\n"
+        context += (
+            message["role"].upper()
+            + ": "
+            + message["content"]
+            + "\n\n"
         )
 
     enhanced_request = f"""
 
 PREVIOUS CONVERSATION:
 
-{conversation_context}
+{context}
 
 CURRENT USER REQUEST:
 
 {user_request}
 
-Understand the current request using
-previous conversation context when useful.
+Use previous conversation context
+when it is relevant.
 """
 
     # --------------------------------------------------------
@@ -912,7 +922,7 @@ previous conversation context when useful.
         ]
 
     # --------------------------------------------------------
-    # RUN SPECIALIST AGENTS
+    # RUN AGENTS
     # --------------------------------------------------------
 
     results = []
@@ -943,7 +953,7 @@ previous conversation context when useful.
         )
 
     # --------------------------------------------------------
-    # FINAL RESPONSE
+    # SYNTHESIS
     # --------------------------------------------------------
 
     final_response = bhai_final_summary(
@@ -962,7 +972,7 @@ previous conversation context when useful.
 
 
 # ============================================================
-# REMINDER CREATOR
+# REMINDER
 # ============================================================
 
 def add_reminder(
@@ -972,32 +982,21 @@ def add_reminder(
     priority
 ):
 
-    reminder = {
-
-        "title": title,
-
-        "date": str(
-            reminder_date
-        ),
-
-        "time": str(
-            reminder_time
-        ),
-
-        "priority": priority,
-
-        "created": datetime.now().strftime(
-            "%Y-%m-%d %H:%M"
-        )
-    }
-
     st.session_state.reminders.append(
-        reminder
+        {
+            "title": title,
+            "date": str(reminder_date),
+            "time": str(reminder_time),
+            "priority": priority,
+            "created": datetime.now().strftime(
+                "%Y-%m-%d %H:%M"
+            )
+        }
     )
 
 
 # ============================================================
-# DEADLINE CREATOR
+# DEADLINE
 # ============================================================
 
 def add_deadline(
@@ -1007,25 +1006,16 @@ def add_deadline(
     notes
 ):
 
-    deadline = {
-
-        "title": title,
-
-        "date": str(
-            deadline_date
-        ),
-
-        "priority": priority,
-
-        "notes": notes,
-
-        "created": datetime.now().strftime(
-            "%Y-%m-%d %H:%M"
-        )
-    }
-
     st.session_state.deadlines.append(
-        deadline
+        {
+            "title": title,
+            "date": str(deadline_date),
+            "priority": priority,
+            "notes": notes,
+            "created": datetime.now().strftime(
+                "%Y-%m-%d %H:%M"
+            )
+        }
     )
 
 
@@ -1043,32 +1033,6 @@ def generate_email(
     api_key
 ):
 
-    prompt = f"""
-
-Create a professional email.
-
-Recipient:
-{recipient}
-
-Purpose:
-{purpose}
-
-Tone:
-{tone}
-
-Additional details:
-{details}
-
-Return:
-
-Subject:
-...
-
-Email Body:
-...
-
-"""
-
     if mode == "Demo Mode":
 
         return f"""Subject: {purpose}
@@ -1083,19 +1047,44 @@ Please let me know if you require
 any additional information.
 
 Best regards,
+
 Engr. Bilal Mehmood
+"""
+
+    prompt = f"""
+
+Create a professional email.
+
+Recipient:
+{recipient}
+
+Purpose:
+{purpose}
+
+Tone:
+{tone}
+
+Details:
+{details}
+
+Return:
+
+Subject:
+...
+
+Email Body:
+...
+
 """
 
     system_instruction = """
 
-You are the BHAI Email Generator Agent.
+You are the BHAI Email Agent.
 
-Write clear, professional and grammatically
-correct emails.
+Write a clear, professional and
+grammatically correct email.
 
 Do not invent important facts.
-
-Return the subject and complete email body.
 
 """
 
@@ -1118,7 +1107,7 @@ st.markdown(
 
 st.markdown(
     '<div class="subtitle">'
-    '20-Agent Daily Routine Intelligent Automation System'
+    '20-Agent Intelligent Daily Routine Automation System'
     '</div>',
     unsafe_allow_html=True
 )
@@ -1129,14 +1118,15 @@ st.markdown(
 
 <h2>🧠 BHAI — Master Agent</h2>
 
-BHAI understands your request, selects the appropriate
-specialist agents, coordinates their work and produces
-the final response.
+BHAI understands your request, selects the required
+specialist agents, coordinates their work and generates
+a final response.
 
 <br><br>
 
 <b>
-User → Chatbot → BHAI → Specialist Agents → Validation → Result
+User → BHAI Chatbot → Master Agent → Specialist Agents
+→ Validation → Final Result
 </b>
 
 </div>
@@ -1149,8 +1139,18 @@ User → Chatbot → BHAI → Specialist Agents → Validation → Result
 # SIDEBAR
 # ============================================================
 
-st.sidebar.header(
-    "⚙️ BHAI Control Panel"
+st.sidebar.title("🤖 BHAI NAVIGATION")
+
+st.sidebar.caption(
+    "20-Agent Intelligent Automation System"
+)
+
+# ------------------------------------------------------------
+# MODE
+# ------------------------------------------------------------
+
+st.sidebar.subheader(
+    "⚙️ System Control"
 )
 
 mode = st.sidebar.radio(
@@ -1168,14 +1168,14 @@ model = st.sidebar.text_input(
 
 max_agents = st.sidebar.slider(
     "Maximum Agents per Request",
-    min_value=1,
-    max_value=10,
-    value=5
+    1,
+    10,
+    5
 )
 
 
 # ============================================================
-# API KEY CONTROL
+# API KEY
 # ============================================================
 
 api_key = ""
@@ -1183,23 +1183,23 @@ api_key = ""
 if mode == "OpenAI API Mode":
 
     st.sidebar.subheader(
-        "🔐 OpenAI API"
+        "🔐 API Configuration"
     )
 
     existing_key = get_api_key()
 
     if existing_key:
 
+        api_key = existing_key
+
         st.sidebar.success(
             "OpenAI API key detected."
         )
 
-        api_key = existing_key
-
     else:
 
         api_key = st.sidebar.text_input(
-            "Enter OpenAI API Key",
+            "OpenAI API Key",
             type="password",
             placeholder="sk-..."
         )
@@ -1208,144 +1208,224 @@ if mode == "OpenAI API Mode":
             api_key
         )
 
-
-if mode == "Demo Mode":
+else:
 
     st.sidebar.success(
         "🟢 Demo Mode Active"
     )
 
-else:
-
-    if api_key:
-
-        st.sidebar.success(
-            "🔵 OpenAI API Mode Active"
-        )
-
-    else:
-
-        st.sidebar.warning(
-            "OpenAI API key required."
-        )
-
 
 # ============================================================
-# AGENT DASHBOARD
+# SIDEBAR NAVIGATION
 # ============================================================
 
-st.subheader(
-    "🧩 BHAI's 20 Specialist Agents"
+st.sidebar.divider()
+
+st.sidebar.subheader(
+    "🧭 Main Navigation"
 )
 
-cols = st.columns(4)
+navigation_options = [
+    "🏠 BHAI Dashboard",
+    "🧠 BHAI Master",
+    "💬 BHAI Chatbot",
+    "🧩 Agent Navigation",
+    "⏰ Reminders",
+    "📅 Deadlines",
+    "📧 Email Generator"
+]
 
-for i, (
-    agent_name,
-    description
-) in enumerate(
-    AGENTS.items()
+page = st.sidebar.radio(
+    "Go To",
+    navigation_options
+)
+
+
+# ============================================================
+# AGENT QUICK NAVIGATION
+# ============================================================
+
+st.sidebar.divider()
+
+st.sidebar.subheader(
+    "🧩 20 Specialist Agents"
+)
+
+agent_menu = []
+
+for index, agent_name in enumerate(
+    AGENTS.keys()
 ):
 
-    with cols[i % 4]:
+    icon = AGENT_ICONS.get(
+        agent_name,
+        "🤖"
+    )
 
-        st.markdown(
-            f"""
-<div class="agent-card">
+    agent_menu.append(
+        f"{icon} {index + 1:02d} - {agent_name.replace(' Agent', '')}"
+    )
 
-<b>{i + 1}. {agent_name}</b>
+selected_agent_menu = st.sidebar.selectbox(
+    "Direct Agent Access",
+    ["None"] + agent_menu
+)
 
-<br>
 
-<small>{description}</small>
+# ============================================================
+# DASHBOARD
+# ============================================================
+
+if page == "🏠 BHAI Dashboard":
+
+    st.header(
+        "🏠 BHAI AI Dashboard"
+    )
+
+    st.markdown(
+        """
+<div class="navigation-box">
+
+<b>Welcome to BHAI AI.</b>
+
+<br><br>
+
+BHAI is a Master-Agent system controlling
+20 specialist agents for daily routines,
+productivity, learning, communication,
+wellness, finance, travel and entertainment.
 
 </div>
 """,
-            unsafe_allow_html=True
+        unsafe_allow_html=True
+    )
+
+    # --------------------------------------------------------
+    # DASHBOARD METRICS
+    # --------------------------------------------------------
+
+    c1, c2, c3, c4, c5 = st.columns(5)
+
+    with c1:
+
+        st.metric(
+            "🤖 Agents",
+            "20"
         )
 
+    with c2:
 
-# ============================================================
-# AUTOMATION CENTER
-# ============================================================
+        st.metric(
+            "💬 Chat Messages",
+            len(
+                st.session_state.chat_messages
+            )
+        )
 
-st.divider()
+    with c3:
 
-st.header(
-    "⚡ BHAI Automation Center"
-)
+        st.metric(
+            "⏰ Reminders",
+            len(
+                st.session_state.reminders
+            )
+        )
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs(
-    [
-        "💬 BHAI Master",
-        "🤖 BHAI Chatbot",
-        "⏰ Reminders",
-        "📅 Deadlines",
-        "📧 Email Generator"
-    ]
-)
+    with c4:
 
+        st.metric(
+            "📅 Deadlines",
+            len(
+                st.session_state.deadlines
+            )
+        )
 
-# ============================================================
-# TAB 1 - BHAI MASTER
-# ============================================================
+    with c5:
 
-with tab1:
+        st.metric(
+            "📧 Emails",
+            len(
+                st.session_state.generated_emails
+            )
+        )
 
-    st.subheader(
-        "💬 Talk to BHAI Master"
-    )
-
-    user_request = st.text_area(
-        "What do you want BHAI to manage?",
-        placeholder=(
-            "Example: Plan my day. I need to work, "
-            "study Python, exercise, check my emails "
-            "and relax in the evening."
-        ),
-        height=120
-    )
+    st.divider()
 
     st.subheader(
-        "⚡ Quick Commands"
+        "🧩 20-Agent Network"
     )
 
-    quick_cols = st.columns(4)
+    cols = st.columns(4)
 
-    quick_commands = [
-        "Plan my complete day",
-        "Create my productivity routine",
-        "Create a learning and fitness plan",
-        "Organize my tasks and reminders"
-    ]
-
-    for i, command in enumerate(
-        quick_commands
+    for i, (
+        agent_name,
+        description
+    ) in enumerate(
+        AGENTS.items()
     ):
 
-        if quick_cols[i].button(
-            command,
-            use_container_width=True,
-            key=f"quick_{i}"
-        ):
+        with cols[i % 4]:
 
-            user_request = command
+            icon = AGENT_ICONS.get(
+                agent_name,
+                "🤖"
+            )
+
+            st.markdown(
+                f"""
+<div class="agent-card">
+
+<h4>
+{icon} {i + 1}. {agent_name}
+</h4>
+
+<small>
+{description}
+</small>
+
+</div>
+""",
+                unsafe_allow_html=True
+            )
+
+
+# ============================================================
+# BHAI MASTER
+# ============================================================
+
+elif page == "🧠 BHAI Master":
+
+    st.header(
+        "🧠 BHAI Master Agent"
+    )
+
+    st.info(
+        "The BHAI Master understands your request "
+        "and routes it to the most relevant agents."
+    )
+
+    master_request = st.text_area(
+        "Enter your request",
+        placeholder=(
+            "Example: Plan my day with Python learning, "
+            "exercise, email work and chess."
+        ),
+        height=150
+    )
 
     if st.button(
-        "🚀 RUN BHAI MASTER AGENT",
+        "🚀 RUN BHAI MASTER",
         type="primary",
         use_container_width=True
     ):
 
-        if not user_request.strip():
+        if not master_request.strip():
 
             st.warning(
-                "Please enter a request for BHAI."
+                "Please enter a request."
             )
 
-            st.stop()
-
-        if (
+        elif (
             mode == "OpenAI API Mode"
             and not api_key
         ):
@@ -1354,171 +1434,153 @@ with tab1:
                 "OpenAI API key is required."
             )
 
-            st.stop()
+        else:
 
-        # ----------------------------------------------------
-        # ROUTING
-        # ----------------------------------------------------
+            with st.spinner(
+                "🧠 BHAI is routing your request..."
+            ):
 
-        with st.spinner(
-            "🧠 BHAI is understanding your request..."
-        ):
+                if mode == "Demo Mode":
 
-            if mode == "Demo Mode":
-
-                selected_agents = (
-                    bhai_demo_router(
-                        user_request,
-                        max_agents
+                    selected_agents = (
+                        bhai_demo_router(
+                            master_request,
+                            max_agents
+                        )
                     )
-                )
 
-            else:
+                else:
 
-                selected_agents = (
-                    bhai_api_router(
-                        user_request,
-                        model,
-                        api_key,
-                        max_agents
+                    selected_agents = (
+                        bhai_api_router(
+                            master_request,
+                            model,
+                            api_key,
+                            max_agents
+                        )
                     )
-                )
 
-        if not selected_agents:
+            if not selected_agents:
 
-            selected_agents = [
-                "Planner Agent",
-                "Task Agent",
-                "Productivity Agent"
-            ]
+                selected_agents = [
+                    "Planner Agent",
+                    "Task Agent",
+                    "Productivity Agent"
+                ]
 
-        st.session_state.last_agents = (
-            selected_agents
-        )
-
-        # ----------------------------------------------------
-        # DISPLAY ROUTING
-        # ----------------------------------------------------
-
-        st.subheader(
-            "🧠 BHAI Agent Routing"
-        )
-
-        st.info(
-            f"BHAI selected "
-            f"{len(selected_agents)} specialist agent(s): "
-            +
-            ", ".join(
+            st.session_state.last_agents = (
                 selected_agents
             )
-        )
 
-        # ----------------------------------------------------
-        # EXECUTE
-        # ----------------------------------------------------
-
-        results = []
-
-        progress = st.progress(
-            0
-        )
-
-        for index, agent_name in enumerate(
-            selected_agents
-        ):
-
-            st.write(
-                f"⚙️ Running **{agent_name}**..."
+            st.subheader(
+                "🧩 Selected Agents"
             )
 
-            if mode == "Demo Mode":
+            for agent in selected_agents:
 
-                result = run_demo_agent(
-                    agent_name,
-                    user_request
+                icon = AGENT_ICONS.get(
+                    agent,
+                    "🤖"
                 )
 
-            else:
-
-                result = run_api_agent(
-                    agent_name,
-                    user_request,
-                    model,
-                    api_key
+                st.success(
+                    f"{icon} {agent}"
                 )
 
-            results.append(
-                (
-                    agent_name,
-                    result
+            results = []
+
+            progress = st.progress(0)
+
+            for i, agent_name in enumerate(
+                selected_agents
+            ):
+
+                st.write(
+                    f"⚙️ Running **{agent_name}**..."
                 )
+
+                if mode == "Demo Mode":
+
+                    result = run_demo_agent(
+                        agent_name,
+                        master_request
+                    )
+
+                else:
+
+                    result = run_api_agent(
+                        agent_name,
+                        master_request,
+                        model,
+                        api_key
+                    )
+
+                results.append(
+                    (
+                        agent_name,
+                        result
+                    )
+                )
+
+                progress.progress(
+                    (i + 1)
+                    / len(selected_agents)
+                )
+
+            st.session_state.last_results = (
+                results
             )
 
-            progress.progress(
-                (index + 1)
-                / len(selected_agents)
-            )
+            with st.spinner(
+                "🧠 BHAI is synthesizing..."
+            ):
 
-        st.session_state.last_results = (
-            results
-        )
-
-        # ----------------------------------------------------
-        # FINAL SYNTHESIS
-        # ----------------------------------------------------
-
-        with st.spinner(
-            "🧠 BHAI is preparing final response..."
-        ):
-
-            final_response = (
-                bhai_final_summary(
-                    user_request,
-                    results,
-                    mode,
-                    model,
-                    api_key
+                final_response = (
+                    bhai_final_summary(
+                        master_request,
+                        results,
+                        mode,
+                        model,
+                        api_key
+                    )
                 )
+
+            st.divider()
+
+            st.subheader(
+                "🤖 BHAI Final Response"
             )
 
-        st.divider()
-
-        st.subheader(
-            "🤖 BHAI Final Response"
-        )
-
-        st.markdown(
-            final_response
-        )
+            st.markdown(
+                final_response
+            )
 
 
 # ============================================================
-# TAB 2 - BHAI CHATBOT
+# BHAI CHATBOT
 # ============================================================
 
-with tab2:
+elif page == "💬 BHAI Chatbot":
 
-    st.subheader(
-        "🤖 BHAI Conversational AI Chatbot"
+    st.header(
+        "💬 BHAI Conversational AI"
     )
 
     st.markdown(
         """
 <div class="chat-info">
 
-<b>💬 Talk naturally with BHAI.</b>
+<b>🤖 Talk naturally with BHAI.</b>
 
 <br><br>
 
-BHAI acts as the master agent. It understands your
-conversation, identifies your requirements, activates
-the appropriate specialist agents and combines their
-results into one response.
+BHAI remembers the recent conversation and
+selects the appropriate specialist agents.
 
 <br><br>
 
 <b>
-User → Chatbot → BHAI Master → 20 Agents → Final Response
+Chat → BHAI → Agent Routing → 20 Agents → Final Response
 </b>
 
 </div>
@@ -1526,26 +1588,21 @@ User → Chatbot → BHAI Master → 20 Agents → Final Response
         unsafe_allow_html=True
     )
 
-    # --------------------------------------------------------
-    # CHAT HEADER
-    # --------------------------------------------------------
-
-    chat_col1, chat_col2 = st.columns(
+    top1, top2 = st.columns(
         [4, 1]
     )
 
-    with chat_col1:
+    with top1:
 
-        st.markdown(
-            "### 💬 BHAI Conversation"
+        st.subheader(
+            "💬 Conversation"
         )
 
-    with chat_col2:
+    with top2:
 
         if st.button(
             "🗑️ Clear Chat",
-            use_container_width=True,
-            key="clear_chat"
+            use_container_width=True
         ):
 
             st.session_state.chat_messages = []
@@ -1553,7 +1610,7 @@ User → Chatbot → BHAI Master → 20 Agents → Final Response
             st.rerun()
 
     # --------------------------------------------------------
-    # WELCOME MESSAGE
+    # CHAT HISTORY
     # --------------------------------------------------------
 
     if not st.session_state.chat_messages:
@@ -1566,78 +1623,46 @@ User → Chatbot → BHAI Master → 20 Agents → Final Response
                 """
 ### 👋 Hello! I am BHAI.
 
-I am your **20-Agent Master AI Assistant**.
+I control **20 specialist agents**.
 
-You can ask me things like:
+Try:
 
-- Plan my day
-- Create a Python learning routine
-- Organize my meetings
-- Prepare an email
-- Create reminders
-- Manage my tasks
-- Plan a trip
-- Prepare a shopping list
-- Organize my finances
-- Add exercise to my routine
-- Give me time for chess
-- Organize my files
-- Help with research
+**"Plan my day with Python learning,
+exercise and chess."**
 
-Just tell me what you need.
+or
+
+**"Prepare my meeting agenda and email."**
+
+I will select the appropriate agents automatically.
 """
             )
-
-    # --------------------------------------------------------
-    # DISPLAY CHAT HISTORY
-    # --------------------------------------------------------
 
     for message in (
         st.session_state.chat_messages
     ):
 
-        role = message.get(
-            "role"
-        )
+        with st.chat_message(
+            message["role"]
+        ):
 
-        content = message.get(
-            "content",
-            ""
-        )
+            st.markdown(
+                message["content"]
+            )
 
-        if role == "user":
+            if message["role"] == "assistant":
 
-            with st.chat_message(
-                "user"
-            ):
-
-                st.markdown(
-                    content
-                )
-
-        else:
-
-            with st.chat_message(
-                "assistant"
-            ):
-
-                st.markdown(
-                    content
-                )
-
-                agents_used = message.get(
+                agents = message.get(
                     "agents",
                     []
                 )
 
-                if agents_used:
+                if agents:
 
                     st.caption(
                         "🧩 Activated Agents: "
                         +
-                        ", ".join(
-                            agents_used
-                        )
+                        ", ".join(agents)
                     )
 
     # --------------------------------------------------------
@@ -1656,15 +1681,10 @@ Just tell me what you need.
         ):
 
             st.error(
-                "OpenAI API key is required "
-                "for OpenAI API Mode."
+                "OpenAI API key is required."
             )
 
         else:
-
-            # -----------------------------------------------
-            # SAVE USER MESSAGE
-            # -----------------------------------------------
 
             st.session_state.chat_messages.append(
                 {
@@ -1672,10 +1692,6 @@ Just tell me what you need.
                     "content": chat_request
                 }
             )
-
-            # -----------------------------------------------
-            # DISPLAY USER
-            # -----------------------------------------------
 
             with st.chat_message(
                 "user"
@@ -1685,93 +1701,223 @@ Just tell me what you need.
                     chat_request
                 )
 
-            # -----------------------------------------------
-            # BHAI PROCESSING
-            # -----------------------------------------------
-
             with st.chat_message(
                 "assistant"
             ):
 
                 with st.spinner(
-                    "🧠 BHAI is thinking and coordinating agents..."
+                    "🧠 BHAI is thinking..."
                 ):
 
-                    try:
+                    (
+                        selected_agents,
+                        results,
+                        final_response
+                    ) = process_bhai_chat(
+                        chat_request,
+                        mode,
+                        model,
+                        api_key,
+                        max_agents
+                    )
 
-                        (
-                            selected_agents,
-                            results,
-                            final_response
-                        ) = process_bhai_chat(
-                            chat_request,
-                            mode,
-                            model,
-                            api_key,
-                            max_agents
-                        )
+                st.markdown(
+                    final_response
+                )
 
-                        # -----------------------------------
-                        # RESPONSE
-                        # -----------------------------------
+                st.caption(
+                    "🧩 Activated Agents: "
+                    +
+                    ", ".join(
+                        selected_agents
+                    )
+                )
 
-                        st.markdown(
-                            final_response
-                        )
+            st.session_state.chat_messages.append(
+                {
+                    "role": "assistant",
+                    "content": final_response,
+                    "agents": selected_agents
+                }
+            )
 
-                        # -----------------------------------
-                        # AGENT ROUTING
-                        # -----------------------------------
+            st.session_state.last_agents = (
+                selected_agents
+            )
 
-                        st.markdown(
-                            "### 🧩 Agent Routing"
-                        )
-
-                        for agent in selected_agents:
-
-                            st.success(
-                                f"✅ {agent}"
-                            )
-
-                        # -----------------------------------
-                        # SAVE CHAT
-                        # -----------------------------------
-
-                        st.session_state.chat_messages.append(
-                            {
-                                "role": "assistant",
-                                "content": final_response,
-                                "agents": selected_agents
-                            }
-                        )
-
-                        # -----------------------------------
-                        # GLOBAL STATE
-                        # -----------------------------------
-
-                        st.session_state.last_agents = (
-                            selected_agents
-                        )
-
-                        st.session_state.last_results = (
-                            results
-                        )
-
-                    except Exception as e:
-
-                        st.error(
-                            "❌ BHAI encountered an error:\n\n"
-                            + str(e)
-                        )
+            st.session_state.last_results = (
+                results
+            )
 
 
 # ============================================================
-# TAB 3 - REMINDERS
+# AGENT NAVIGATION
 # ============================================================
 
-with tab3:
+elif page == "🧩 Agent Navigation":
+
+    st.header(
+        "🧩 20-Agent Navigation Center"
+    )
+
+    st.info(
+        "Select a specialist agent below and send "
+        "a direct request to that agent."
+    )
+
+    selected_agent = st.selectbox(
+        "Select Specialist Agent",
+        list(AGENTS.keys())
+    )
+
+    icon = AGENT_ICONS.get(
+        selected_agent,
+        "🤖"
+    )
+
+    st.markdown(
+        f"""
+<div class="bhai-box">
+
+<h2>
+{icon} {selected_agent}
+</h2>
+
+{AGENTS[selected_agent]}
+
+</div>
+""",
+        unsafe_allow_html=True
+    )
+
+    agent_request = st.text_area(
+        f"Request for {selected_agent}",
+        placeholder=(
+            f"Example: Ask {selected_agent} "
+            "to help me..."
+        ),
+        height=150
+    )
+
+    if st.button(
+        f"🚀 RUN {selected_agent}",
+        type="primary",
+        use_container_width=True
+    ):
+
+        if not agent_request.strip():
+
+            st.warning(
+                "Please enter a request."
+            )
+
+        elif (
+            mode == "OpenAI API Mode"
+            and not api_key
+        ):
+
+            st.error(
+                "OpenAI API key is required."
+            )
+
+        else:
+
+            with st.spinner(
+                f"{icon} {selected_agent} is working..."
+            ):
+
+                if mode == "Demo Mode":
+
+                    result = run_demo_agent(
+                        selected_agent,
+                        agent_request
+                    )
+
+                else:
+
+                    result = run_api_agent(
+                        selected_agent,
+                        agent_request,
+                        model,
+                        api_key
+                    )
+
+            st.success(
+                f"✅ {selected_agent} completed."
+            )
+
+            st.subheader(
+                "📋 Agent Response"
+            )
+
+            st.markdown(
+                result
+            )
+
+            st.session_state.last_agents = [
+                selected_agent
+            ]
+
+            st.session_state.last_results = [
+                (
+                    selected_agent,
+                    result
+                )
+            ]
+
+    # --------------------------------------------------------
+    # AGENT GRID
+    # --------------------------------------------------------
+
+    st.divider()
 
     st.subheader(
+        "🗂️ All 20 Agents"
+    )
+
+    cols = st.columns(4)
+
+    for i, (
+        agent_name,
+        description
+    ) in enumerate(
+        AGENTS.items()
+    ):
+
+        with cols[i % 4]:
+
+            icon = AGENT_ICONS.get(
+                agent_name,
+                "🤖"
+            )
+
+            st.markdown(
+                f"""
+<div class="agent-card">
+
+<b>
+{icon} {i + 1:02d}. {agent_name}
+</b>
+
+<br><br>
+
+<small>
+{description}
+</small>
+
+</div>
+""",
+                unsafe_allow_html=True
+            )
+
+
+# ============================================================
+# REMINDERS
+# ============================================================
+
+elif page == "⏰ Reminders":
+
+    st.header(
         "⏰ Reminder Manager"
     )
 
@@ -1804,13 +1950,11 @@ with tab3:
             ]
         )
 
-        add_reminder_button = (
-            st.form_submit_button(
-                "➕ Add Reminder"
-            )
+        submit = st.form_submit_button(
+            "➕ Add Reminder"
         )
 
-        if add_reminder_button:
+        if submit:
 
             if reminder_title.strip():
 
@@ -1847,9 +1991,11 @@ with tab3:
                 f"""
 <div class="reminder-card">
 
-<b>⏰ {reminder["title"]}</b>
+<b>
+⏰ {reminder["title"]}
+</b>
 
-<br>
+<br><br>
 
 📅 {reminder["date"]}
 
@@ -1869,7 +2015,7 @@ with tab3:
 
             if st.button(
                 f"🗑️ Delete Reminder {i + 1}",
-                key=f"delete_reminder_{i}"
+                key=f"rem_{i}"
             ):
 
                 st.session_state.reminders.pop(
@@ -1886,12 +2032,12 @@ with tab3:
 
 
 # ============================================================
-# TAB 4 - DEADLINES
+# DEADLINES
 # ============================================================
 
-with tab4:
+elif page == "📅 Deadlines":
 
-    st.subheader(
+    st.header(
         "📅 Deadline Manager"
     )
 
@@ -1902,7 +2048,7 @@ with tab4:
         deadline_title = st.text_input(
             "Deadline",
             placeholder=(
-                "Example: Submit project report"
+                "Example: Submit Python project"
             )
         )
 
@@ -1912,7 +2058,7 @@ with tab4:
         )
 
         deadline_priority = st.selectbox(
-            "Deadline Priority",
+            "Priority",
             [
                 "Critical",
                 "High",
@@ -1923,18 +2069,14 @@ with tab4:
 
         deadline_notes = st.text_area(
             "Notes",
-            placeholder=(
-                "Additional deadline information..."
-            )
+            placeholder="Additional information..."
         )
 
-        add_deadline_button = (
-            st.form_submit_button(
-                "➕ Add Deadline"
-            )
+        submit = st.form_submit_button(
+            "➕ Add Deadline"
         )
 
-        if add_deadline_button:
+        if submit:
 
             if deadline_title.strip():
 
@@ -1971,9 +2113,11 @@ with tab4:
                 f"""
 <div class="deadline-card">
 
-<b>📅 {deadline["title"]}</b>
+<b>
+📅 {deadline["title"]}
+</b>
 
-<br>
+<br><br>
 
 🗓️ Deadline:
 <b>{deadline["date"]}</b>
@@ -1994,7 +2138,7 @@ with tab4:
 
             if st.button(
                 f"🗑️ Delete Deadline {i + 1}",
-                key=f"delete_deadline_{i}"
+                key=f"deadline_{i}"
             ):
 
                 st.session_state.deadlines.pop(
@@ -2011,35 +2155,28 @@ with tab4:
 
 
 # ============================================================
-# TAB 5 - EMAIL GENERATOR
+# EMAIL GENERATOR
 # ============================================================
 
-with tab5:
+elif page == "📧 Email Generator":
 
-    st.subheader(
+    st.header(
         "📧 BHAI AI Email Generator"
-    )
-
-    st.write(
-        "Describe the email you need and BHAI "
-        "will generate a professional email."
     )
 
     recipient = st.text_input(
         "Recipient Name / Department",
-        placeholder=(
-            "Example: Director / HR Department"
-        )
+        placeholder="Example: Director / HR Department"
     )
 
-    email_purpose = st.text_input(
+    purpose = st.text_input(
         "Email Purpose",
         placeholder=(
             "Example: Request approval for AI workshop"
         )
     )
 
-    email_tone = st.selectbox(
+    tone = st.selectbox(
         "Email Tone",
         [
             "Professional",
@@ -2051,13 +2188,13 @@ with tab5:
         ]
     )
 
-    email_details = st.text_area(
+    details = st.text_area(
         "Additional Details",
+        height=160,
         placeholder=(
-            "Write the main points you want "
-            "to include in the email."
-        ),
-        height=150
+            "Enter the important points "
+            "you want to include."
+        )
     )
 
     if st.button(
@@ -2072,7 +2209,7 @@ with tab5:
                 "Please enter recipient."
             )
 
-        elif not email_purpose.strip():
+        elif not purpose.strip():
 
             st.warning(
                 "Please enter email purpose."
@@ -2084,28 +2221,27 @@ with tab5:
         ):
 
             st.error(
-                "OpenAI API key is required "
-                "for API Mode."
+                "OpenAI API key is required."
             )
 
         else:
 
             with st.spinner(
-                "📧 BHAI Email Agent is writing..."
+                "📧 Email Agent is writing..."
             ):
 
-                generated_email = generate_email(
+                email = generate_email(
                     recipient,
-                    email_purpose,
-                    email_tone,
-                    email_details,
+                    purpose,
+                    tone,
+                    details,
                     mode,
                     model,
                     api_key
                 )
 
             st.session_state.generated_emails.append(
-                generated_email
+                email
             )
 
             st.success(
@@ -2118,7 +2254,7 @@ with tab5:
             )
 
             st.markdown(
-                generated_email
+                email
             )
 
             st.markdown(
@@ -2128,59 +2264,123 @@ with tab5:
 
 
 # ============================================================
-# PRODUCTIVITY DASHBOARD
+# DIRECT AGENT QUICK ACCESS
 # ============================================================
 
-st.divider()
+if (
+    selected_agent_menu != "None"
+    and page == "🏠 BHAI Dashboard"
+):
 
-st.header(
-    "📊 BHAI Productivity Dashboard"
-)
-
-col1, col2, col3, col4, col5 = st.columns(5)
-
-with col1:
-
-    st.metric(
-        "🤖 Agents",
-        "20"
+    selected_number = int(
+        selected_agent_menu.split("-")[0]
+        .replace("🧠", "")
+        .replace("⏰", "")
+        .replace("📅", "")
+        .replace("✅", "")
+        .replace("⚡", "")
+        .replace("📚", "")
+        .replace("🔬", "")
+        .replace("💬", "")
+        .replace("📧", "")
+        .replace("🤝", "")
+        .replace("❤️", "")
+        .replace("🏃", "")
+        .replace("💰", "")
+        .replace("🛒", "")
+        .replace("✈️", "")
+        .replace("📰", "")
+        .replace("📝", "")
+        .replace("📁", "")
+        .replace("🏠", "")
+        .replace("🎮", "")
+        .strip()
     )
 
-with col2:
+    agent_names = list(
+        AGENTS.keys()
+    )
 
-    st.metric(
-        "💬 Chat Messages",
-        len(
-            st.session_state.chat_messages
+    if 1 <= selected_number <= 20:
+
+        direct_agent = agent_names[
+            selected_number - 1
+        ]
+
+        st.divider()
+
+        st.header(
+            f"{AGENT_ICONS[direct_agent]} "
+            f"{direct_agent}"
         )
-    )
 
-with col3:
-
-    st.metric(
-        "⏰ Reminders",
-        len(
-            st.session_state.reminders
+        st.info(
+            AGENTS[direct_agent]
         )
-    )
 
-with col4:
-
-    st.metric(
-        "📅 Deadlines",
-        len(
-            st.session_state.deadlines
+        direct_request = st.text_area(
+            "Direct Agent Request",
+            placeholder=(
+                f"Ask {direct_agent} to do something..."
+            ),
+            height=120,
+            key="direct_agent_request"
         )
-    )
 
-with col5:
+        if st.button(
+            "🚀 RUN DIRECT AGENT",
+            type="primary",
+            key="direct_agent_button"
+        ):
 
-    st.metric(
-        "📧 Emails",
-        len(
-            st.session_state.generated_emails
-        )
-    )
+            if not direct_request.strip():
+
+                st.warning(
+                    "Please enter a request."
+                )
+
+            elif (
+                mode == "OpenAI API Mode"
+                and not api_key
+            ):
+
+                st.error(
+                    "OpenAI API key is required."
+                )
+
+            else:
+
+                with st.spinner(
+                    f"{direct_agent} is working..."
+                ):
+
+                    if mode == "Demo Mode":
+
+                        direct_result = (
+                            run_demo_agent(
+                                direct_agent,
+                                direct_request
+                            )
+                        )
+
+                    else:
+
+                        direct_result = (
+                            run_api_agent(
+                                direct_agent,
+                                direct_request,
+                                model,
+                                api_key
+                            )
+                        )
+
+                st.subheader(
+                    "📋 Agent Response"
+                )
+
+                st.markdown(
+                    direct_result
+                )
 
 
 # ============================================================
@@ -2195,93 +2395,61 @@ if st.session_state.last_agents:
         "📊 Last BHAI Execution"
     )
 
-    st.info(
-        "Last request activated "
-        +
-        str(
-            len(
-                st.session_state.last_agents
-            )
-        )
-        +
-        " specialist agent(s)."
+    st.write(
+        "Recently activated agents:"
     )
 
-    for agent in (
+    cols = st.columns(
+        min(
+            len(
+                st.session_state.last_agents
+            ),
+            5
+        )
+    )
+
+    for i, agent in enumerate(
         st.session_state.last_agents
     ):
 
-        st.success(
-            f"✅ {agent}"
-        )
+        with cols[
+            i % len(cols)
+        ]:
 
+            icon = AGENT_ICONS.get(
+                agent,
+                "🤖"
+            )
 
-# ============================================================
-# EXAMPLE REQUESTS
-# ============================================================
-
-st.divider()
-
-st.subheader(
-    "💡 Example BHAI Chatbot Requests"
-)
-
-examples = [
-
-    "BHAI, plan my day.",
-
-    "BHAI, remind me to submit my AI report tomorrow at 10 AM.",
-
-    "BHAI, create a deadline for my Python project on Friday.",
-
-    "BHAI, organize my work and study schedule.",
-
-    "BHAI, create a fitness and learning routine.",
-
-    "BHAI, prepare my meeting and email tasks.",
-
-    "BHAI, generate a professional email requesting workshop approval.",
-
-    "BHAI, organize my finances and shopping list.",
-
-    "BHAI, plan my travel checklist.",
-
-    "BHAI, give me a productive daily routine with some chess time.",
-
-    "BHAI, help me organize my research work.",
-
-    "BHAI, organize my documents and files."
-
-]
-
-for example in examples:
-
-    st.code(
-        example
-    )
+            st.success(
+                f"{icon} {agent}"
+            )
 
 
 # ============================================================
 # FOOTER
 # ============================================================
 
+st.divider()
+
 st.markdown(
     """
 <div class="footer">
 
-🤖 <b>BHAI AI — 20-Agent Intelligent Daily Routine System</b>
+🤖 <b>BHAI AI</b>
 
 <br>
 
-Master Agent + 20 Specialist Agents + Conversational Chatbot
+20-Agent Intelligent Daily Routine Automation System
 
 <br><br>
 
-💬 Chatbot |
+🧠 Master Agent |
+💬 AI Chatbot |
+🧩 20 Specialist Agents |
 ⏰ Reminders |
 📅 Deadlines |
-📧 Email Generator |
-🧠 AI Task Management
+📧 Email Generator
 
 <br><br>
 
