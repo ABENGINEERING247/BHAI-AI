@@ -50,7 +50,7 @@ except ImportError:
 
 
 # ============================================================
-# PAGE CONFIG
+# PAGE CONFIGURATION
 # ============================================================
 
 st.set_page_config(
@@ -69,6 +69,579 @@ APP_NAME = "BHAI AI"
 APP_VERSION = "5.0"
 DEFAULT_MODEL = "gpt-6-luna"
 DB_FILE = "bhai_ai.db"
+
+
+# ============================================================
+# BLUE + WHITE THEME
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+
+    /* ========================================================
+       GLOBAL
+       ======================================================== */
+
+    :root {
+        --bhai-blue: #0d6efd;
+        --bhai-dark-blue: #084298;
+        --bhai-navy: #063970;
+        --bhai-light-blue: #eaf4ff;
+        --bhai-pale-blue: #f5faff;
+        --bhai-border: #c9e2ff;
+        --bhai-white: #ffffff;
+        --bhai-text: #12304a;
+        --bhai-muted: #58718a;
+    }
+
+    .stApp {
+        background:
+            linear-gradient(
+                180deg,
+                #f4f9ff 0%,
+                #ffffff 35%,
+                #ffffff 100%
+            );
+        color: var(--bhai-text);
+    }
+
+    .main {
+        background: #ffffff;
+    }
+
+    /* ========================================================
+       SIDEBAR
+       ======================================================== */
+
+    [data-testid="stSidebar"] {
+        background:
+            linear-gradient(
+                180deg,
+                #ffffff 0%,
+                #f0f7ff 55%,
+                #e7f2ff 100%
+            );
+
+        border-right: 1px solid var(--bhai-border);
+    }
+
+    [data-testid="stSidebar"] * {
+        color: var(--bhai-text);
+    }
+
+    /* ========================================================
+       HEADINGS
+       ======================================================== */
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: var(--bhai-navy) !important;
+    }
+
+    .main-title {
+        font-size: 46px;
+        font-weight: 900;
+        letter-spacing: -1px;
+        color: var(--bhai-navy);
+    }
+
+    .subtitle {
+        font-size: 18px;
+        color: var(--bhai-muted);
+        margin-bottom: 20px;
+    }
+
+    /* ========================================================
+       HERO
+       ======================================================== */
+
+    .hero {
+        padding: 32px;
+        border-radius: 24px;
+
+        border: 1px solid var(--bhai-border);
+
+        background:
+            linear-gradient(
+                135deg,
+                #e8f3ff 0%,
+                #ffffff 55%,
+                #f1f8ff 100%
+            );
+
+        box-shadow:
+            0 8px 25px rgba(13, 110, 253, 0.08);
+
+        margin-bottom: 25px;
+    }
+
+    /* ========================================================
+       AGENT CARDS
+       ======================================================== */
+
+    .agent-card {
+        border: 1px solid var(--bhai-border);
+
+        border-radius: 18px;
+
+        padding: 20px;
+
+        margin-bottom: 16px;
+
+        background: #ffffff;
+
+        min-height: 170px;
+
+        box-shadow:
+            0 5px 18px rgba(13, 110, 253, 0.06);
+
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease,
+            border-color 0.2s ease;
+    }
+
+    .agent-card:hover {
+        transform: translateY(-3px);
+
+        border-color: var(--bhai-blue);
+
+        box-shadow:
+            0 10px 28px rgba(13, 110, 253, 0.13);
+    }
+
+    .agent-icon {
+        font-size: 38px;
+    }
+
+    .agent-name {
+        font-size: 21px;
+        font-weight: 750;
+        margin-top: 8px;
+        color: var(--bhai-navy);
+    }
+
+    .agent-description {
+        color: var(--bhai-muted);
+        font-size: 14px;
+        margin-top: 7px;
+    }
+
+    /* ========================================================
+       GUIDE BOX
+       ======================================================== */
+
+    .guide-box {
+        border-left: 5px solid var(--bhai-blue);
+
+        padding: 16px;
+
+        border-radius: 10px;
+
+        background: var(--bhai-light-blue);
+    }
+
+    /* ========================================================
+       BUTTONS
+       ======================================================== */
+
+    .stButton > button {
+        background: var(--bhai-blue) !important;
+
+        color: #ffffff !important;
+
+        border:
+            1px solid var(--bhai-blue) !important;
+
+        border-radius: 10px !important;
+
+        font-weight: 650 !important;
+
+        min-height: 42px;
+
+        box-shadow:
+            0 4px 12px rgba(13, 110, 253, 0.15);
+
+        transition:
+            background 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .stButton > button:hover {
+        background: var(--bhai-dark-blue) !important;
+
+        color: #ffffff !important;
+
+        border-color: var(--bhai-dark-blue) !important;
+
+        transform: translateY(-1px);
+    }
+
+    .stButton > button:focus {
+        color: #ffffff !important;
+    }
+
+    /* ========================================================
+       PRIMARY BUTTON
+       ======================================================== */
+
+    button[kind="primary"] {
+        background: var(--bhai-blue) !important;
+
+        color: #ffffff !important;
+
+        border-color: var(--bhai-blue) !important;
+    }
+
+    /* ========================================================
+       INPUTS
+       ======================================================== */
+
+    input,
+    textarea {
+
+        border:
+            1px solid var(--bhai-border) !important;
+
+        border-radius: 9px !important;
+
+        background: #ffffff !important;
+
+        color: var(--bhai-text) !important;
+    }
+
+    input:focus,
+    textarea:focus {
+
+        border-color:
+            var(--bhai-blue) !important;
+
+        box-shadow:
+            0 0 0 2px rgba(13, 110, 253, 0.12) !important;
+    }
+
+    /* ========================================================
+       SELECTBOX / MULTISELECT
+       ======================================================== */
+
+    [data-baseweb="select"] > div {
+
+        background: #ffffff !important;
+
+        border-color:
+            var(--bhai-border) !important;
+
+        color: var(--bhai-text) !important;
+
+        border-radius: 9px !important;
+    }
+
+    /* ========================================================
+       RADIO
+       ======================================================== */
+
+    [data-testid="stRadio"] label {
+        color: var(--bhai-text) !important;
+    }
+
+    /* ========================================================
+       TABS
+       ======================================================== */
+
+    button[data-baseweb="tab"] {
+
+        color:
+            var(--bhai-navy) !important;
+
+        font-weight: 650;
+    }
+
+    button[data-baseweb="tab"][aria-selected="true"] {
+
+        color:
+            var(--bhai-blue) !important;
+
+        border-bottom:
+            3px solid var(--bhai-blue) !important;
+    }
+
+    /* ========================================================
+       EXPANDERS
+       ======================================================== */
+
+    [data-testid="stExpander"] {
+
+        border:
+            1px solid var(--bhai-border) !important;
+
+        border-radius: 12px !important;
+
+        background: #ffffff !important;
+    }
+
+    /* ========================================================
+       METRICS
+       ======================================================== */
+
+    [data-testid="stMetric"] {
+
+        background:
+            linear-gradient(
+                135deg,
+                #ffffff,
+                #eef7ff
+            );
+
+        border:
+            1px solid var(--bhai-border);
+
+        border-radius: 14px;
+
+        padding: 14px;
+
+        box-shadow:
+            0 4px 15px rgba(13, 110, 253, 0.06);
+    }
+
+    [data-testid="stMetricLabel"] {
+        color: var(--bhai-muted) !important;
+    }
+
+    [data-testid="stMetricValue"] {
+        color: var(--bhai-navy) !important;
+    }
+
+    /* ========================================================
+       ALERTS
+       ======================================================== */
+
+    [data-testid="stAlert"] {
+
+        border-radius: 12px !important;
+
+        border:
+            1px solid var(--bhai-border) !important;
+    }
+
+    /* ========================================================
+       CODE BLOCKS
+       ======================================================== */
+
+    pre {
+
+        border:
+            1px solid var(--bhai-border) !important;
+
+        border-radius: 10px !important;
+
+        background:
+            #f4f9ff !important;
+    }
+
+    /* ========================================================
+       DATAFRAME
+       ======================================================== */
+
+    [data-testid="stDataFrame"] {
+
+        border:
+            1px solid var(--bhai-border);
+
+        border-radius: 10px;
+    }
+
+    /* ========================================================
+       DIVIDER
+       ======================================================== */
+
+    hr {
+        border-color: var(--bhai-border) !important;
+    }
+
+    /* ========================================================
+       FOOTER
+       ======================================================== */
+
+    .footer {
+
+        text-align: center;
+
+        margin-top: 60px;
+
+        padding: 30px;
+
+        color: var(--bhai-muted);
+
+        border-top:
+            1px solid var(--bhai-border);
+
+        background:
+            linear-gradient(
+                180deg,
+                #ffffff,
+                #f1f8ff
+            );
+
+        border-radius: 18px 18px 0 0;
+    }
+
+    /* ========================================================
+       TEAM AI MARKHORS SCROLLING TICKER
+       ======================================================== */
+
+    .team-ticker {
+
+        width: 100%;
+
+        overflow: hidden;
+
+        background:
+            linear-gradient(
+                90deg,
+                #063970,
+                #0d6efd,
+                #063970
+            );
+
+        border-radius: 12px;
+
+        margin-bottom: 20px;
+
+        border:
+            1px solid #0b5ed7;
+
+        box-shadow:
+            0 5px 18px rgba(13, 110, 253, 0.15);
+
+        white-space: nowrap;
+    }
+
+    .team-ticker-track {
+
+        display: inline-flex;
+
+        align-items: center;
+
+        min-width: 200%;
+
+        animation:
+            bhaiTicker 18s linear infinite;
+
+        padding: 11px 0;
+    }
+
+    .team-ticker-track span {
+
+        display: inline-block;
+
+        color: #ffffff;
+
+        font-size: 17px;
+
+        font-weight: 800;
+
+        letter-spacing: 2px;
+
+        padding:
+            0 55px;
+    }
+
+    @keyframes bhaiTicker {
+
+        0% {
+            transform: translateX(0);
+        }
+
+        100% {
+            transform: translateX(-50%);
+        }
+    }
+
+    /* ========================================================
+       SIDEBAR HEADER
+       ======================================================== */
+
+    .sidebar-brand {
+
+        text-align: center;
+
+        padding: 10px 5px 5px 5px;
+    }
+
+    .sidebar-brand-icon {
+
+        font-size: 52px;
+    }
+
+    .sidebar-brand-title {
+
+        color: var(--bhai-navy);
+
+        font-size: 27px;
+
+        font-weight: 900;
+    }
+
+    .sidebar-brand-subtitle {
+
+        color: var(--bhai-muted);
+
+        font-size: 13px;
+    }
+
+    /* ========================================================
+       SCROLLBAR
+       ======================================================== */
+
+    ::-webkit-scrollbar {
+        width: 9px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #eef6ff;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #9bc7f5;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #0d6efd;
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# ============================================================
+# TEAM AI MARKHORS TICKER
+# ============================================================
+
+st.markdown(
+    """
+    <div class="team-ticker">
+        <div class="team-ticker-track">
+            <span>TEAM AI MARKHORS</span>
+            <span>TEAM AI MARKHORS</span>
+            <span>TEAM AI MARKHORS</span>
+            <span>TEAM AI MARKHORS</span>
+            <span>TEAM AI MARKHORS</span>
+            <span>TEAM AI MARKHORS</span>
+            <span>TEAM AI MARKHORS</span>
+            <span>TEAM AI MARKHORS</span>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 
 # ============================================================
@@ -559,84 +1132,6 @@ KEYWORD_ROUTING = {
 
 
 # ============================================================
-# CUSTOM CSS
-# ============================================================
-
-st.markdown(
-    """
-    <style>
-
-    .main-title {
-        font-size: 46px;
-        font-weight: 900;
-        letter-spacing: -1px;
-    }
-
-    .subtitle {
-        font-size: 18px;
-        color: #777777;
-        margin-bottom: 20px;
-    }
-
-    .hero {
-        padding: 32px;
-        border-radius: 24px;
-        border: 1px solid rgba(128,128,128,.20);
-        background: linear-gradient(
-            135deg,
-            rgba(80,120,255,.10),
-            rgba(0,190,160,.07)
-        );
-        margin-bottom: 25px;
-    }
-
-    .agent-card {
-        border: 1px solid rgba(128,128,128,.20);
-        border-radius: 18px;
-        padding: 20px;
-        margin-bottom: 16px;
-        background: rgba(128,128,128,.035);
-        min-height: 170px;
-    }
-
-    .agent-icon {
-        font-size: 38px;
-    }
-
-    .agent-name {
-        font-size: 21px;
-        font-weight: 750;
-        margin-top: 8px;
-    }
-
-    .agent-description {
-        color: #777777;
-        font-size: 14px;
-        margin-top: 7px;
-    }
-
-    .guide-box {
-        border-left: 5px solid #777777;
-        padding: 16px;
-        border-radius: 10px;
-        background: rgba(128,128,128,.05);
-    }
-
-    .footer {
-        text-align: center;
-        margin-top: 60px;
-        padding: 30px;
-        color: #777777;
-        border-top: 1px solid rgba(128,128,128,.20);
-    }
-
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-
-# ============================================================
 # SESSION STATE
 # ============================================================
 
@@ -651,11 +1146,12 @@ defaults = {
     "last_agents": [],
     "generated_emails": [],
     "api_test_result": None,
-    "welcome_seen": False,
 }
 
 for key, value in defaults.items():
+
     if key not in st.session_state:
+
         st.session_state[key] = value
 
 
@@ -667,17 +1163,23 @@ db_lock = threading.Lock()
 
 
 def get_db():
+
     conn = sqlite3.connect(
         DB_FILE,
         check_same_thread=False,
     )
+
     conn.row_factory = sqlite3.Row
+
     return conn
 
 
 def initialize_database():
+
     with db_lock:
+
         conn = get_db()
+
         cursor = conn.cursor()
 
         cursor.execute(
@@ -710,6 +1212,7 @@ def initialize_database():
         )
 
         conn.commit()
+
         conn.close()
 
 
@@ -721,7 +1224,9 @@ initialize_database()
 # ============================================================
 
 def add_contact_db(name, email):
+
     with db_lock:
+
         conn = get_db()
 
         conn.execute(
@@ -738,10 +1243,12 @@ def add_contact_db(name, email):
         )
 
         conn.commit()
+
         conn.close()
 
 
 def get_contacts():
+
     conn = get_db()
 
     rows = conn.execute(
@@ -758,7 +1265,9 @@ def get_contacts():
 
 
 def delete_contact(contact_id):
+
     with db_lock:
+
         conn = get_db()
 
         conn.execute(
@@ -767,6 +1276,7 @@ def delete_contact(contact_id):
         )
 
         conn.commit()
+
         conn.close()
 
 
@@ -782,9 +1292,11 @@ def add_schedule_db(
     subject,
     run_at,
 ):
+
     schedule_id = uuid.uuid4().hex[:10]
 
     with db_lock:
+
         conn = get_db()
 
         conn.execute(
@@ -821,12 +1333,14 @@ def add_schedule_db(
         )
 
         conn.commit()
+
         conn.close()
 
     return schedule_id
 
 
 def get_schedules():
+
     conn = get_db()
 
     rows = conn.execute(
@@ -843,7 +1357,9 @@ def get_schedules():
 
 
 def cancel_schedule(schedule_id):
+
     with db_lock:
+
         conn = get_db()
 
         conn.execute(
@@ -856,6 +1372,7 @@ def cancel_schedule(schedule_id):
         )
 
         conn.commit()
+
         conn.close()
 
 
@@ -864,35 +1381,53 @@ def cancel_schedule(schedule_id):
 # ============================================================
 
 def get_secret(name, default=""):
+
     try:
-        value = st.secrets.get(name, default)
+
+        value = st.secrets.get(
+            name,
+            default,
+        )
 
         if value is None:
+
             return default
 
         return str(value).strip()
 
     except Exception:
+
         return default
 
 
 def get_api_key_source():
+
     if get_secret("OPENAI_API_KEY"):
+
         return "Streamlit Secrets"
 
-    if os.getenv("OPENAI_API_KEY", "").strip():
+    if os.getenv(
+        "OPENAI_API_KEY",
+        "",
+    ).strip():
+
         return "Environment Variable"
 
     if st.session_state.manual_api_key.strip():
+
         return "Session Key"
 
     return "Not Configured"
 
 
 def get_api_key():
-    secret_key = get_secret("OPENAI_API_KEY")
+
+    secret_key = get_secret(
+        "OPENAI_API_KEY"
+    )
 
     if secret_key:
+
         return secret_key
 
     env_key = os.getenv(
@@ -901,53 +1436,75 @@ def get_api_key():
     ).strip()
 
     if env_key:
+
         return env_key
 
     return st.session_state.manual_api_key.strip()
 
 
 def get_model():
+
     selected = st.session_state.model.strip()
 
     if selected:
+
         return selected
 
-    secret_model = get_secret("OPENAI_MODEL")
+    secret_model = get_secret(
+        "OPENAI_MODEL"
+    )
 
     if secret_model:
+
         return secret_model
 
     return DEFAULT_MODEL
 
 
 def mask_key(key):
+
     if not key:
+
         return "Not configured"
 
     if len(key) <= 10:
+
         return "••••••••"
 
-    return f"{key[:5]}••••••••{key[-4:]}"
+    return (
+        f"{key[:5]}••••••••{key[-4:]}"
+    )
 
 
 def api_status():
+
     if OpenAI is None:
-        return "❌ OpenAI package not installed"
+
+        return "OpenAI package not installed"
 
     if not get_api_key():
-        return "⚪ API key not configured"
 
-    return f"🟢 API available via {get_api_key_source()}"
+        return "API key not configured"
+
+    return (
+        f"API available via "
+        f"{get_api_key_source()}"
+    )
 
 
 # ============================================================
 # OPENAI
 # ============================================================
 
-def call_openai(prompt, system_instruction=None):
+def call_openai(
+    prompt,
+    system_instruction=None,
+):
+
     if OpenAI is None:
+
         return (
-            "❌ OpenAI package is not installed.\n\n"
+            "OpenAI package is not installed.\n\n"
             "Install it with:\n"
             "pip install openai"
         )
@@ -955,23 +1512,27 @@ def call_openai(prompt, system_instruction=None):
     api_key = get_api_key()
 
     if not api_key:
+
         return (
-            "❌ OpenAI API key is not configured.\n\n"
-            "Open 🔐 API Management and configure your API key."
+            "OpenAI API key is not configured.\n\n"
+            "Open API Management and configure your API key."
         )
 
     model = get_model()
 
     try:
-        client = OpenAI(api_key=api_key)
+
+        client = OpenAI(
+            api_key=api_key
+        )
 
         response = client.responses.create(
             model=model,
             instructions=(
                 system_instruction
                 or
-                "You are BHAI AI, a professional master "
-                "multi-agent assistant."
+                "You are BHAI AI, a professional "
+                "master multi-agent assistant."
             ),
             input=prompt,
         )
@@ -982,31 +1543,45 @@ def call_openai(prompt, system_instruction=None):
             "",
         )
 
-        return result or "No response generated."
+        return (
+            result
+            or
+            "No response generated."
+        )
 
     except Exception as exc:
+
         error_text = str(exc)
 
         if (
             "429" in error_text
-            or "quota" in error_text.lower()
-            or "credit" in error_text.lower()
+            or
+            "quota" in error_text.lower()
+            or
+            "credit" in error_text.lower()
         ):
+
             return (
-                "❌ OpenAI API quota/credits error.\n\n"
-                "The API key may be valid, but the associated "
-                "API project may have insufficient credits or quota."
+                "OpenAI API quota/credits error.\n\n"
+                "The API key may be valid, but the "
+                "associated API project may have "
+                "insufficient credits or quota."
             )
 
-        return f"❌ OpenAI Error:\n\n{error_text}"
+        return (
+            f"OpenAI Error:\n\n"
+            f"{error_text}"
+        )
 
 
 def test_openai_connection():
+
     result = call_openai(
         "Reply with exactly: BHAI API connection successful."
     )
 
-    if result.startswith("❌"):
+    if result.startswith("OpenAI"):
+
         return False, result
 
     return True, result
@@ -1017,22 +1592,35 @@ def test_openai_connection():
 # ============================================================
 
 def detect_agents(text):
+
     text_lower = text.lower()
+
     found = []
 
     for agent_id, keywords in KEYWORD_ROUTING.items():
+
         for keyword in keywords:
+
             if keyword.lower() in text_lower:
+
                 found.append(agent_id)
+
                 break
 
     if not found:
+
         found = [1]
 
-    return list(dict.fromkeys(found))[:5]
+    return list(
+        dict.fromkeys(found)
+    )[:5]
 
 
-def build_agent_prompt(agent_id, request):
+def build_agent_prompt(
+    agent_id,
+    request,
+):
+
     agent = AGENTS[agent_id]
 
     guidance = "\n".join(
@@ -1065,41 +1653,44 @@ RESPONSE RULES:
 """
 
 
-def demo_response(request, agent_ids):
+def demo_response(
+    request,
+    agent_ids,
+):
+
     names = ", ".join(
         AGENTS[item]["name"]
         for item in agent_ids
     )
 
     return f"""
-## 🤖 BHAI AI — Demo Mode
+## BHAI AI — Demo Mode
 
-### 🔀 Routed Agent(s)
+### Agent Routing
 
 {names}
 
-### 📝 Your Request
+### Your Request
 
 {request}
 
-### ✅ Demo Result
+### Demo Result
 
 BHAI understood your request and routed it to the
 appropriate specialized agent.
 
-You are currently using **Demo Mode**, so an external
+You are currently using Demo Mode, so an external
 AI API was not called.
 
-### 🚀 To Enable AI Mode
+### To Enable AI Mode
 
 Go to:
 
-**Sidebar → Operating Mode → API Mode**
+Sidebar → Operating Mode → API Mode
 
 Then configure your API from:
 
-**🔐 API Management**
-
+API Management
 """
 
 
@@ -1108,6 +1699,7 @@ Then configure your API from:
 # ============================================================
 
 def normalize_roman_urdu(text):
+
     replacements = {
         r"\baaj\b": "today",
         r"\baj\b": "today",
@@ -1126,6 +1718,7 @@ def normalize_roman_urdu(text):
     result = text
 
     for pattern, replacement in replacements.items():
+
         result = re.sub(
             pattern,
             replacement,
@@ -1137,11 +1730,15 @@ def normalize_roman_urdu(text):
 
 
 def parse_datetime_text(text):
+
     normalized = normalize_roman_urdu(text)
+
     now = datetime.now()
 
     if dateparser:
+
         try:
+
             result = dateparser.parse(
                 normalized,
                 settings={
@@ -1151,9 +1748,13 @@ def parse_datetime_text(text):
             )
 
             if result:
-                return result.replace(tzinfo=None)
+
+                return result.replace(
+                    tzinfo=None
+                )
 
         except Exception:
+
             pass
 
     match = re.search(
@@ -1163,14 +1764,21 @@ def parse_datetime_text(text):
     )
 
     if match:
+
         hour = int(match.group(1))
-        minute = int(match.group(2) or 0)
+
+        minute = int(
+            match.group(2) or 0
+        )
+
         ampm = match.group(3).lower()
 
         if ampm == "pm" and hour < 12:
+
             hour += 12
 
         if ampm == "am" and hour == 12:
+
             hour = 0
 
         result = now.replace(
@@ -1181,10 +1789,16 @@ def parse_datetime_text(text):
         )
 
         if "tomorrow" in normalized.lower():
-            result += timedelta(days=1)
+
+            result += timedelta(
+                days=1
+            )
 
         if result <= now:
-            result += timedelta(days=1)
+
+            result += timedelta(
+                days=1
+            )
 
         return result
 
@@ -1195,25 +1809,42 @@ def parse_datetime_text(text):
 # SMTP
 # ============================================================
 
-def send_email_smtp(to_email, subject, body):
+def send_email_smtp(
+    to_email,
+    subject,
+    body,
+):
+
     host = get_secret(
         "SMTP_HOST",
-        os.getenv("SMTP_HOST", ""),
+        os.getenv(
+            "SMTP_HOST",
+            "",
+        ),
     )
 
     port_value = get_secret(
         "SMTP_PORT",
-        os.getenv("SMTP_PORT", "587"),
+        os.getenv(
+            "SMTP_PORT",
+            "587",
+        ),
     )
 
     username = get_secret(
         "SMTP_USERNAME",
-        os.getenv("SMTP_USERNAME", ""),
+        os.getenv(
+            "SMTP_USERNAME",
+            "",
+        ),
     )
 
     password = get_secret(
         "SMTP_PASSWORD",
-        os.getenv("SMTP_PASSWORD", ""),
+        os.getenv(
+            "SMTP_PASSWORD",
+            "",
+        ),
     )
 
     sender = get_secret(
@@ -1222,8 +1853,13 @@ def send_email_smtp(to_email, subject, body):
     )
 
     try:
-        port = int(port_value or 587)
+
+        port = int(
+            port_value or 587
+        )
+
     except ValueError:
+
         port = 587
 
     if not all(
@@ -1234,12 +1870,14 @@ def send_email_smtp(to_email, subject, body):
             sender,
         ]
     ):
+
         return (
             False,
             "SMTP is not configured.",
         )
 
     try:
+
         message = MIMEMultipart()
 
         message["From"] = sender
@@ -1259,11 +1897,14 @@ def send_email_smtp(to_email, subject, body):
             port,
             timeout=20,
         ) as server:
+
             server.starttls()
+
             server.login(
                 username,
                 password,
             )
+
             server.sendmail(
                 sender,
                 [to_email],
@@ -1276,6 +1917,7 @@ def send_email_smtp(to_email, subject, body):
         )
 
     except Exception as exc:
+
         return (
             False,
             f"SMTP Error: {exc}",
@@ -1289,12 +1931,17 @@ def send_email_smtp(to_email, subject, body):
 scheduler = None
 
 if BackgroundScheduler:
+
     try:
+
         scheduler = BackgroundScheduler(
             timezone="Asia/Karachi"
         )
+
         scheduler.start()
+
     except Exception:
+
         scheduler = None
 
 
@@ -1304,6 +1951,7 @@ def scheduled_email_job(
     subject,
     message,
 ):
+
     success, _ = send_email_smtp(
         recipient,
         subject,
@@ -1311,6 +1959,7 @@ def scheduled_email_job(
     )
 
     with db_lock:
+
         conn = get_db()
 
         conn.execute(
@@ -1322,12 +1971,15 @@ def scheduled_email_job(
             """,
             (
                 datetime.now().isoformat(),
-                "Completed" if success else "Failed",
+                "Completed"
+                if success
+                else "Failed",
                 schedule_id,
             ),
         )
 
         conn.commit()
+
         conn.close()
 
 
@@ -1338,13 +1990,16 @@ def schedule_email(
     message,
     run_at,
 ):
+
     if not scheduler or not DateTrigger:
+
         return (
             False,
             "APScheduler is not installed or running.",
         )
 
     try:
+
         scheduler.add_job(
             scheduled_email_job,
             trigger=DateTrigger(
@@ -1366,6 +2021,7 @@ def schedule_email(
         )
 
     except Exception as exc:
+
         return (
             False,
             f"Scheduler error: {exc}",
@@ -1376,8 +2032,13 @@ def schedule_email(
 # DOCUMENT GENERATORS
 # ============================================================
 
-def create_word(title, body):
+def create_word(
+    title,
+    body,
+):
+
     if Document is None:
+
         return None
 
     document = Document()
@@ -1388,8 +2049,12 @@ def create_word(title, body):
     )
 
     for line in body.split("\n"):
+
         if line.strip():
-            document.add_paragraph(line)
+
+            document.add_paragraph(
+                line
+            )
 
     output = io.BytesIO()
 
@@ -1400,13 +2065,18 @@ def create_word(title, body):
     return output.getvalue()
 
 
-def create_pdf(title, body):
+def create_pdf(
+    title,
+    body,
+):
+
     if (
         SimpleDocTemplate is None
         or Paragraph is None
         or Spacer is None
         or getSampleStyleSheet is None
     ):
+
         return None
 
     output = io.BytesIO()
@@ -1423,19 +2093,28 @@ def create_pdf(title, body):
             title,
             styles["Title"],
         ),
-        Spacer(1, 12),
+        Spacer(
+            1,
+            12,
+        ),
     ]
 
     for line in body.split("\n"):
+
         if line.strip():
+
             story.append(
                 Paragraph(
                     line,
                     styles["BodyText"],
                 )
             )
+
             story.append(
-                Spacer(1, 7)
+                Spacer(
+                    1,
+                    7,
+                )
             )
 
     document.build(story)
@@ -1443,165 +2122,6 @@ def create_pdf(title, body):
     output.seek(0)
 
     return output.getvalue()
-
-
-# ============================================================
-# WELCOME POPUP
-# ============================================================
-
-def show_welcome_popup():
-
-    if st.session_state.welcome_seen:
-        return
-
-    @st.dialog(
-        "🤖 Welcome to BHAI AI",
-        width="large",
-    )
-    def welcome_dialog():
-
-        st.markdown(
-            """
-            <div style="text-align:center;">
-                <div style="font-size:70px;">🤖</div>
-                <h1>Welcome to BHAI AI</h1>
-                <p style="font-size:18px;">
-                    Your Intelligent Master Agent for
-                    Daily Routine Automation
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        st.divider()
-
-        col1, col2, col3 = st.columns(3)
-
-        with col1:
-            st.metric(
-                "🤖 AI Agents",
-                "21",
-            )
-
-        with col2:
-            st.metric(
-                "⚙️ Modes",
-                "2",
-            )
-
-        with col3:
-            st.metric(
-                "🧠 Controller",
-                "BHAI Master",
-            )
-
-        st.divider()
-
-        st.subheader(
-            "🚀 What is BHAI AI?"
-        )
-
-        st.write(
-            """
-            BHAI AI is a multi-agent assistant designed to
-            organize daily routines, productivity, learning,
-            communication, research, documents, reminders
-            and other activities.
-            """
-        )
-
-        st.subheader(
-            "🧠 How BHAI Works"
-        )
-
-        st.info(
-            """
-            User Request
-            ↓
-            BHAI Master Agent
-            ↓
-            Intent Detection
-            ↓
-            Specialized Agent
-            ↓
-            AI Response / Application Action
-            ↓
-            Result
-            """
-        )
-
-        st.subheader(
-            "⚡ Two Operating Modes"
-        )
-
-        mode1, mode2 = st.columns(2)
-
-        with mode1:
-            st.success(
-                """
-                **Demo Mode**
-
-                • No API key required
-                • Explore the application
-                • Test routing
-                • Learn the agent system
-                """
-            )
-
-        with mode2:
-            st.info(
-                """
-                **API Mode**
-
-                • Uses configured OpenAI API
-                • Intelligent responses
-                • Individual agent intelligence
-                • Master Agent coordination
-                """
-            )
-
-        st.subheader(
-            "🎯 Quick Start"
-        )
-
-        st.markdown(
-            """
-            **1.** Select Demo Mode or API Mode.
-
-            **2.** Open **🧠 BHAI Master** and simply
-            describe what you need.
-
-            **3.** BHAI automatically identifies
-            the relevant agent.
-
-            **4.** Open **🤖 AGENTS** if you want to
-            work directly with a particular agent.
-
-            **5.** Use **🔐 API Management** to configure
-            your API.
-
-            **6.** Use **⏰ Reminders & Schedules** for
-            scheduled reminders and notifications.
-            """
-        )
-
-        st.divider()
-
-        st.success(
-            "💡 You do not need to remember which agent to use. "
-            "Just tell BHAI what you want."
-        )
-
-        if st.button(
-            "🚀 Start Using BHAI AI",
-            type="primary",
-            use_container_width=True,
-        ):
-            st.session_state.welcome_seen = True
-            st.rerun()
-
-    welcome_dialog()
 
 
 # ============================================================
@@ -1613,10 +2133,12 @@ def render_dashboard():
     st.markdown(
         """
         <div class="hero">
-            <div class="main-title">🤖 BHAI AI</div>
+            <div class="main-title">BHAI AI</div>
+
             <div class="subtitle">
                 Master Agent for Intelligent Daily Routine Automation
             </div>
+
             <b>
                 Think → Ask → Route → Agent → Action → Result
             </b>
@@ -1628,29 +2150,29 @@ def render_dashboard():
     c1, c2, c3, c4 = st.columns(4)
 
     c1.metric(
-        "🤖 Agents",
+        "AI Agents",
         len(AGENTS),
     )
 
     c2.metric(
-        "⚙️ Mode",
+        "Operating Mode",
         st.session_state.mode,
     )
 
     c3.metric(
-        "🔑 API",
+        "API",
         get_api_key_source(),
     )
 
     c4.metric(
-        "🧠 Model",
+        "Model",
         get_model(),
     )
 
     st.divider()
 
     st.subheader(
-        "🚀 BHAI AI Capabilities"
+        "BHAI AI Capabilities"
     )
 
     cards = [
@@ -1698,7 +2220,11 @@ def render_dashboard():
                 f"""
                 <div class="agent-card">
                     <div class="agent-icon">{icon}</div>
-                    <div class="agent-name">{title}</div>
+
+                    <div class="agent-name">
+                        {title}
+                    </div>
+
                     <div class="agent-description">
                         {description}
                     </div>
@@ -1710,7 +2236,7 @@ def render_dashboard():
     st.divider()
 
     st.subheader(
-        "💡 Example"
+        "Example"
     )
 
     st.code(
@@ -1724,19 +2250,19 @@ and create a meeting agenda.
     )
 
     st.write(
-        "BHAI Master can identify multiple relevant agents "
-        "from a single request."
+        "BHAI Master can identify multiple relevant "
+        "agents from a single request."
     )
 
 
 # ============================================================
-# MASTER AGENT PAGE
+# MASTER AGENT
 # ============================================================
 
 def render_master():
 
     st.title(
-        "🧠 BHAI Master Agent"
+        "BHAI Master Agent"
     )
 
     st.caption(
@@ -1744,7 +2270,7 @@ def render_master():
     )
 
     request = st.text_area(
-        "💬 What do you want BHAI to do?",
+        "What do you want BHAI to do?",
         height=170,
         placeholder=(
             "Example:\n"
@@ -1754,27 +2280,34 @@ def render_master():
     )
 
     if st.button(
-        "🚀 Run BHAI Master",
+        "Run BHAI Master",
         type="primary",
         use_container_width=True,
     ):
 
         if not request.strip():
+
             st.warning(
                 "Please enter your request."
             )
+
             return
 
-        agents = detect_agents(request)
+        agents = detect_agents(
+            request
+        )
 
         st.session_state.last_agents = agents
 
         st.subheader(
-            "🔀 Agent Routing"
+            "Agent Routing"
         )
 
         route_columns = st.columns(
-            min(len(agents), 3)
+            min(
+                len(agents),
+                3,
+            )
         )
 
         for index, agent_id in enumerate(agents):
@@ -1792,6 +2325,7 @@ def render_master():
             prompts = []
 
             for agent_id in agents:
+
                 prompts.append(
                     build_agent_prompt(
                         agent_id,
@@ -1799,7 +2333,9 @@ def render_master():
                     )
                 )
 
-            combined_prompt = "\n\n".join(prompts)
+            combined_prompt = (
+                "\n\n".join(prompts)
+            )
 
             result = call_openai(
                 combined_prompt,
@@ -1825,20 +2361,22 @@ def render_master():
         st.divider()
 
         st.subheader(
-            "📌 BHAI Result"
+            "BHAI Result"
         )
 
-        st.markdown(result)
+        st.markdown(
+            result
+        )
 
 
 # ============================================================
-# CHATBOT PAGE
+# CHATBOT
 # ============================================================
 
 def render_chatbot():
 
     st.title(
-        "💬 BHAI Chatbot"
+        "BHAI Chatbot"
     )
 
     st.caption(
@@ -1850,6 +2388,7 @@ def render_chatbot():
         with st.chat_message(
             message["role"]
         ):
+
             st.markdown(
                 message["content"]
             )
@@ -1867,10 +2406,17 @@ def render_chatbot():
             }
         )
 
-        with st.chat_message("user"):
-            st.markdown(prompt)
+        with st.chat_message(
+            "user"
+        ):
 
-        agents = detect_agents(prompt)
+            st.markdown(
+                prompt
+            )
+
+        agents = detect_agents(
+            prompt
+        )
 
         if st.session_state.mode == "API Mode":
 
@@ -1902,8 +2448,13 @@ def render_chatbot():
             }
         )
 
-        with st.chat_message("assistant"):
-            st.markdown(result)
+        with st.chat_message(
+            "assistant"
+        ):
+
+            st.markdown(
+                result
+            )
 
 
 # ============================================================
@@ -1921,7 +2472,7 @@ def render_agent_center():
         return
 
     st.title(
-        "🤖 BHAI Agent Center"
+        "BHAI Agent Center"
     )
 
     st.caption(
@@ -1932,8 +2483,10 @@ def render_agent_center():
     st.divider()
 
     search = st.text_input(
-        "🔎 Search Agents",
-        placeholder="Search Email, Planner, Research...",
+        "Search Agents",
+        placeholder=(
+            "Search Email, Planner, Research..."
+        ),
     )
 
     filtered = []
@@ -1948,12 +2501,16 @@ def render_agent_center():
 
         if (
             not search.strip()
-            or search.lower() in searchable
+            or search.lower()
+            in searchable
         ):
-            filtered.append(agent_id)
+
+            filtered.append(
+                agent_id
+            )
 
     st.write(
-        f"**{len(filtered)} agent(s) available**"
+        f"{len(filtered)} agent(s) available"
     )
 
     columns = st.columns(3)
@@ -1967,15 +2524,19 @@ def render_agent_center():
             st.markdown(
                 f"""
                 <div class="agent-card">
+
                     <div class="agent-icon">
                         {agent["icon"]}
                     </div>
+
                     <div class="agent-name">
                         {agent_id}. {agent["name"]}
                     </div>
+
                     <div class="agent-description">
                         {agent["description"]}
                     </div>
+
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -1988,23 +2549,28 @@ def render_agent_center():
             ):
 
                 st.session_state.selected_agent = agent_id
+
                 st.session_state.agent_page = True
+
                 st.rerun()
 
 
 # ============================================================
-# INDIVIDUAL AGENT PAGE
+# INDIVIDUAL AGENT
 # ============================================================
 
-def render_single_agent(agent_id):
+def render_single_agent(
+    agent_id
+):
 
     agent = AGENTS[agent_id]
 
     if st.button(
-        "⬅️ Back to Agent Center"
+        "Back to Agent Center"
     ):
 
         st.session_state.agent_page = False
+
         st.rerun()
 
     st.divider()
@@ -2012,15 +2578,19 @@ def render_single_agent(agent_id):
     st.markdown(
         f"""
         <div class="hero">
+
             <div style="font-size:60px;">
                 {agent["icon"]}
             </div>
+
             <div class="main-title">
                 {agent["name"]}
             </div>
+
             <div class="subtitle">
                 {agent["description"]}
             </div>
+
         </div>
         """,
         unsafe_allow_html=True,
@@ -2031,21 +2601,23 @@ def render_single_agent(agent_id):
     with left:
 
         st.subheader(
-            "📘 Agent Guidance"
+            "Agent Guidance"
         )
 
         for item in agent["guidance"]:
+
             st.markdown(
-                f"✅ {item}"
+                f"✓ {item}"
             )
 
     with right:
 
         st.subheader(
-            "💡 Example Requests"
+            "Example Requests"
         )
 
         for example in agent["examples"]:
+
             st.code(
                 example,
                 language="text",
@@ -2057,35 +2629,43 @@ def render_single_agent(agent_id):
         f"{agent['icon']} Talk to {agent['name']}"
     )
 
-    prompt_key = f"agent_prompt_{agent_id}"
+    prompt_key = (
+        f"agent_prompt_{agent_id}"
+    )
 
     prompt = st.text_area(
         "Your Request",
         height=180,
         key=prompt_key,
         placeholder=(
-            f"Enter a request for {agent['name']}..."
+            f"Enter a request for "
+            f"{agent['name']}..."
         ),
     )
 
     if st.button(
-        "🚀 Run Agent",
+        "Run Agent",
         type="primary",
         use_container_width=True,
         key=f"run_agent_{agent_id}",
     ):
 
         if not prompt.strip():
+
             st.warning(
                 "Please enter a request."
             )
+
             return
 
         with st.spinner(
             f"{agent['name']} is working..."
         ):
 
-            if st.session_state.mode == "API Mode":
+            if (
+                st.session_state.mode
+                == "API Mode"
+            ):
 
                 result = call_openai(
                     build_agent_prompt(
@@ -2109,10 +2689,12 @@ def render_single_agent(agent_id):
         st.divider()
 
         st.subheader(
-            "📌 Agent Result"
+            "Agent Result"
         )
 
-        st.markdown(result)
+        st.markdown(
+            result
+        )
 
 
 # ============================================================
@@ -2122,7 +2704,7 @@ def render_single_agent(agent_id):
 def render_schedules():
 
     st.title(
-        "⏰ Reminders & Schedules"
+        "Reminders & Schedules"
     )
 
     st.caption(
@@ -2152,6 +2734,7 @@ def render_schedules():
         )
 
         recipient = ""
+
         subject = ""
 
         if action == "Email Notification":
@@ -2179,7 +2762,7 @@ def render_schedules():
         )
 
         submitted = st.form_submit_button(
-            "⏰ Create Schedule"
+            "Create Schedule"
         )
 
     if submitted:
@@ -2194,6 +2777,7 @@ def render_schedules():
             st.error(
                 "Please select a future date and time."
             )
+
             return
 
         if (
@@ -2204,6 +2788,7 @@ def render_schedules():
             st.error(
                 "Recipient email is required."
             )
+
             return
 
         schedule_id = add_schedule_db(
@@ -2230,16 +2815,22 @@ def render_schedules():
             )
 
             if success:
-                st.success(result)
+
+                st.success(
+                    result
+                )
+
             else:
+
                 st.warning(
-                    f"Schedule saved, but scheduler failed: {result}"
+                    f"Schedule saved, but scheduler failed: "
+                    f"{result}"
                 )
 
         else:
 
             st.success(
-                "⏰ System alarm saved for "
+                "System alarm saved for "
                 + run_at.strftime(
                     "%Y-%m-%d %H:%M"
                 )
@@ -2248,7 +2839,7 @@ def render_schedules():
     st.divider()
 
     st.subheader(
-        "📋 Existing Schedules"
+        "Existing Schedules"
     )
 
     rows = get_schedules()
@@ -2258,11 +2849,14 @@ def render_schedules():
         st.info(
             "No schedules found."
         )
+
         return
 
     for row in rows:
 
-        with st.container(border=True):
+        with st.container(
+            border=True
+        ):
 
             st.write(
                 f"**{row['title']}**"
@@ -2301,7 +2895,7 @@ def render_schedules():
 def render_contacts():
 
     st.title(
-        "👥 Contacts"
+        "Contacts"
     )
 
     with st.form(
@@ -2317,12 +2911,15 @@ def render_contacts():
         )
 
         submitted = st.form_submit_button(
-            "➕ Add Contact"
+            "Add Contact"
         )
 
     if submitted:
 
-        if not name.strip() or not email.strip():
+        if (
+            not name.strip()
+            or not email.strip()
+        ):
 
             st.error(
                 "Name and email are required."
@@ -2350,6 +2947,7 @@ def render_contacts():
         st.info(
             "No contacts available."
         )
+
         return
 
     for row in rows:
@@ -2385,7 +2983,7 @@ def render_contacts():
 def render_email_generator():
 
     st.title(
-        "📧 Email Generator"
+        "Email Generator"
     )
 
     st.caption(
@@ -2415,7 +3013,7 @@ def render_email_generator():
     )
 
     if st.button(
-        "✉️ Generate Email",
+        "Generate Email",
         type="primary",
     ):
 
@@ -2424,6 +3022,7 @@ def render_email_generator():
             st.warning(
                 "Please enter the email purpose."
             )
+
             return
 
         if st.session_state.mode == "API Mode":
@@ -2454,7 +3053,8 @@ Body:
         else:
 
             result = (
-                f"Subject: Regarding {purpose[:60]}\n\n"
+                f"Subject: Regarding "
+                f"{purpose[:60]}\n\n"
                 f"Dear {recipient or 'Sir/Madam'},\n\n"
                 f"I am writing regarding {purpose}.\n\n"
                 "Kind regards,\n"
@@ -2479,7 +3079,7 @@ Body:
 def render_documents():
 
     st.title(
-        "📄 Word / PDF Generator"
+        "Word / PDF Generator"
     )
 
     title = st.text_input(
@@ -2497,7 +3097,7 @@ def render_documents():
     )
 
     if st.button(
-        "📄 Generate Documents",
+        "Generate Documents",
         type="primary",
     ):
 
@@ -2506,6 +3106,7 @@ def render_documents():
             st.warning(
                 "Please enter document content."
             )
+
             return
 
         word_data = create_word(
@@ -2525,7 +3126,7 @@ def render_documents():
             if word_data:
 
                 st.download_button(
-                    "⬇️ Download Word",
+                    "Download Word",
                     data=word_data,
                     file_name="bhai_document.docx",
                     mime=(
@@ -2547,7 +3148,7 @@ def render_documents():
             if pdf_data:
 
                 st.download_button(
-                    "⬇️ Download PDF",
+                    "Download PDF",
                     data=pdf_data,
                     file_name="bhai_document.pdf",
                     mime="application/pdf",
@@ -2568,7 +3169,7 @@ def render_documents():
 def render_api_management():
 
     st.title(
-        "🔐 API Management"
+        "API Management"
     )
 
     st.caption(
@@ -2580,30 +3181,33 @@ def render_api_management():
     with c1:
 
         st.subheader(
-            "🔑 API Status"
+            "API Status"
         )
 
         if get_api_key():
+
             st.success(
                 api_status()
             )
+
         else:
+
             st.warning(
                 api_status()
             )
 
         st.write(
-            f"**Source:** {get_api_key_source()}"
+            f"Source: {get_api_key_source()}"
         )
 
         st.write(
-            f"**Key:** `{mask_key(get_api_key())}`"
+            f"Key: `{mask_key(get_api_key())}`"
         )
 
     with c2:
 
         st.subheader(
-            "🧠 Model"
+            "Model"
         )
 
         st.session_state.model = st.text_input(
@@ -2618,7 +3222,7 @@ def render_api_management():
     st.divider()
 
     st.subheader(
-        "1️⃣ Streamlit Secrets"
+        "1. Streamlit Secrets"
     )
 
     st.code(
@@ -2642,7 +3246,7 @@ SMTP_FROM = "your-email@gmail.com"
     st.divider()
 
     st.subheader(
-        "2️⃣ Temporary Session Key"
+        "2. Temporary Session Key"
     )
 
     entered_key = st.text_input(
@@ -2657,7 +3261,7 @@ SMTP_FROM = "your-email@gmail.com"
     with c1:
 
         if st.button(
-            "💾 Use Session Key",
+            "Use Session Key",
             use_container_width=True,
         ):
 
@@ -2674,7 +3278,7 @@ SMTP_FROM = "your-email@gmail.com"
     with c2:
 
         if st.button(
-            "🧪 Test API",
+            "Test API",
             use_container_width=True,
         ):
 
@@ -2689,12 +3293,14 @@ SMTP_FROM = "your-email@gmail.com"
     with c3:
 
         if st.button(
-            "🗑️ Clear Session Key",
+            "Clear Session Key",
             use_container_width=True,
         ):
 
             st.session_state.manual_api_key = ""
+
             st.session_state.api_test_result = None
+
             st.rerun()
 
     if st.session_state.api_test_result:
@@ -2704,14 +3310,21 @@ SMTP_FROM = "your-email@gmail.com"
         )
 
         if success:
-            st.success(message)
+
+            st.success(
+                message
+            )
+
         else:
-            st.error(message)
+
+            st.error(
+                message
+            )
 
     st.divider()
 
     st.subheader(
-        "3️⃣ Environment Variable"
+        "3. Environment Variable"
     )
 
     st.code(
@@ -2731,7 +3344,7 @@ export OPENAI_API_KEY="sk-your-key"
     st.divider()
 
     st.subheader(
-        "🔒 Security Guidance"
+        "Security Guidance"
     )
 
     st.markdown(
@@ -2754,10 +3367,20 @@ with st.sidebar:
 
     st.markdown(
         """
-        <div style="text-align:center;">
-            <div style="font-size:52px;">🤖</div>
-            <h2>BHAI AI</h2>
-            <small>Master Agent System</small>
+        <div class="sidebar-brand">
+
+            <div class="sidebar-brand-icon">
+                🤖
+            </div>
+
+            <div class="sidebar-brand-title">
+                BHAI AI
+            </div>
+
+            <div class="sidebar-brand-subtitle">
+                Master Agent System
+            </div>
+
         </div>
         """,
         unsafe_allow_html=True,
@@ -2766,14 +3389,15 @@ with st.sidebar:
     st.divider()
 
     st.session_state.mode = st.radio(
-        "⚙️ Operating Mode",
+        "Operating Mode",
         [
             "Demo Mode",
             "API Mode",
         ],
         index=(
             0
-            if st.session_state.mode == "Demo Mode"
+            if st.session_state.mode
+            == "Demo Mode"
             else 1
         ),
     )
@@ -2781,7 +3405,7 @@ with st.sidebar:
     st.divider()
 
     st.subheader(
-        "🧭 Main Navigation"
+        "Main Navigation"
     )
 
     page = st.radio(
@@ -2803,7 +3427,7 @@ with st.sidebar:
     st.divider()
 
     st.subheader(
-        "🤖 Individual Agent Navigation"
+        "Individual Agent Navigation"
     )
 
     selected_agent_name = st.selectbox(
@@ -2825,23 +3449,16 @@ with st.sidebar:
     )
 
     if st.button(
-        "🚀 Open Selected Agent",
+        "Open Selected Agent",
         use_container_width=True,
     ):
 
-        st.session_state.selected_agent = selected_id
+        st.session_state.selected_agent = (
+            selected_id
+        )
+
         st.session_state.agent_page = True
 
-        st.rerun()
-
-    st.divider()
-
-    if st.button(
-        "👋 Welcome / User Guide",
-        use_container_width=True,
-    ):
-
-        st.session_state.welcome_seen = False
         st.rerun()
 
     st.divider()
@@ -2897,25 +3514,31 @@ elif page == "🔐 API Management":
 
 
 # ============================================================
-# WELCOME POPUP
-# ============================================================
-
-show_welcome_popup()
-
-
-# ============================================================
 # FOOTER
 # ============================================================
 
 st.markdown(
     """
     <div class="footer">
-        <b>🤖 BHAI AI</b><br>
+
+        <b>BHAI AI</b>
+
+        <br>
+
         Master Agent for Intelligent Daily Routine Automation
+
         <br><br>
+
         21 Specialized Agents • Demo Mode • API Mode
+
         <br><br>
+
+        <b>TEAM AI MARKHORS</b>
+
+        <br><br>
+
         <b>By Engr. Bilal Mehmood</b>
+
     </div>
     """,
     unsafe_allow_html=True,
