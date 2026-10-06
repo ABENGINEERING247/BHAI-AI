@@ -13,7 +13,7 @@ from email.mime.multipart import MIMEMultipart
 import streamlit as st
 
 # ============================================================
-# OPTIONAL PACKAGES
+# OPTIONAL LIBRARIES
 # ============================================================
 
 try:
@@ -42,18 +42,22 @@ except ImportError:
 
 try:
     from reportlab.lib.pagesizes import A4
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+    from reportlab.platypus import (
+        SimpleDocTemplate,
+        Paragraph,
+        Spacer
+    )
     from reportlab.lib.styles import getSampleStyleSheet
 except ImportError:
     SimpleDocTemplate = None
 
 
 # ============================================================
-# PAGE CONFIGURATION
+# PAGE CONFIG
 # ============================================================
 
 st.set_page_config(
-    page_title="BHAI - 20 Agent AI",
+    page_title="BHAI AI - 20 Agent AI",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -61,7 +65,7 @@ st.set_page_config(
 
 
 # ============================================================
-# CUSTOM CSS
+# CSS
 # ============================================================
 
 st.markdown(
@@ -71,43 +75,54 @@ st.markdown(
     .main-title {
         font-size: 42px;
         font-weight: 800;
-        margin-bottom: 0px;
+        margin-bottom: 0;
     }
 
     .subtitle {
         font-size: 18px;
-        color: #666;
+        color: #777;
         margin-bottom: 20px;
     }
 
     .agent-card {
-        border: 1px solid #ddd;
-        border-radius: 14px;
-        padding: 16px;
-        margin-bottom: 10px;
-        background: rgba(128,128,128,0.05);
+        border: 1px solid rgba(128,128,128,0.25);
+        border-radius: 15px;
+        padding: 18px;
+        margin-bottom: 12px;
+        background: rgba(128,128,128,0.04);
     }
 
-    .success-box {
-        padding: 15px;
-        border-radius: 10px;
-        border: 1px solid #35a853;
-        background: rgba(53,168,83,0.08);
+    .agent-header {
+        font-size: 30px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .agent-description {
+        color: #777;
+        font-size: 15px;
     }
 
     .schedule-box {
-        padding: 16px;
-        border-radius: 12px;
         border: 1px solid #4285f4;
+        border-radius: 12px;
+        padding: 16px;
         background: rgba(66,133,244,0.08);
+    }
+
+    .success-box {
+        border: 1px solid #34a853;
+        border-radius: 12px;
+        padding: 16px;
+        background: rgba(52,168,83,0.08);
     }
 
     .footer {
         text-align: center;
-        margin-top: 40px;
-        padding: 20px;
+        margin-top: 50px;
+        padding: 25px;
         color: #777;
-        border-top: 1px solid #ddd;
+        border-top: 1px solid rgba(128,128,128,0.25);
     }
 
     </style>
@@ -124,103 +139,123 @@ AGENTS = {
     1: {
         "name": "Planner Agent",
         "icon": "🗓️",
-        "description": "Plans daily and long-term activities."
+        "description": "Plans daily, weekly and long-term activities."
     },
+
     2: {
         "name": "Reminder Agent",
         "icon": "⏰",
         "description": "Creates reminders and alerts."
     },
+
     3: {
         "name": "Calendar Agent",
         "icon": "📅",
-        "description": "Manages calendar events."
+        "description": "Manages appointments, events and calendar activities."
     },
+
     4: {
         "name": "Task Agent",
         "icon": "✅",
-        "description": "Creates and manages tasks."
+        "description": "Creates and manages actionable tasks."
     },
+
     5: {
         "name": "Productivity Agent",
         "icon": "🚀",
-        "description": "Improves productivity and workflows."
+        "description": "Improves productivity and work processes."
     },
+
     6: {
         "name": "Learning Agent",
         "icon": "📚",
-        "description": "Creates learning plans and study schedules."
+        "description": "Creates study plans, courses and learning schedules."
     },
+
     7: {
         "name": "Research Agent",
         "icon": "🔬",
-        "description": "Performs research and analysis."
+        "description": "Supports research, analysis and information organization."
     },
+
     8: {
         "name": "Communication Agent",
         "icon": "💬",
-        "description": "Prepares communication and messages."
+        "description": "Prepares messages and communication."
     },
+
     9: {
         "name": "Email Agent",
         "icon": "📧",
-        "description": "Creates and manages emails."
+        "description": "Creates professional emails."
     },
+
     10: {
         "name": "Meeting Agent",
         "icon": "🤝",
-        "description": "Plans meetings and agendas."
+        "description": "Plans meetings, agendas and action points."
     },
+
     11: {
         "name": "Health Agent",
         "icon": "❤️",
-        "description": "Provides general wellness planning."
+        "description": "Helps organize general health and wellness routines."
     },
+
     12: {
         "name": "Fitness Agent",
         "icon": "🏃",
-        "description": "Creates fitness routines."
+        "description": "Creates exercise and fitness plans."
     },
+
     13: {
         "name": "Finance Agent",
         "icon": "💰",
-        "description": "Helps organize finance-related tasks."
+        "description": "Organizes budgets, expenses and financial tasks."
     },
+
     14: {
         "name": "Shopping Agent",
         "icon": "🛒",
-        "description": "Manages shopping lists."
+        "description": "Creates and manages shopping lists."
     },
+
     15: {
         "name": "Travel Agent",
         "icon": "✈️",
-        "description": "Plans travel activities."
+        "description": "Plans trips, travel schedules and activities."
     },
+
     16: {
         "name": "News Agent",
         "icon": "📰",
         "description": "Handles news-related requests."
     },
+
     17: {
         "name": "Notes Agent",
         "icon": "📝",
         "description": "Creates and organizes notes."
     },
+
     18: {
         "name": "File Agent",
         "icon": "📁",
-        "description": "Creates and manages documents."
+        "description": "Works with documents and files."
     },
+
     19: {
         "name": "Home Agent",
         "icon": "🏠",
         "description": "Manages home-related routines."
     },
+
     20: {
         "name": "Entertainment Agent",
         "icon": "🎮",
         "description": "Handles entertainment and games."
     },
+
     21: {
         "name": "Email Notification Agent",
         "icon": "🔔",
@@ -238,7 +273,6 @@ KEYWORD_ROUTING = {
     1: [
         "plan",
         "planning",
-        "schedule my day",
         "daily plan",
         "weekly plan"
     ],
@@ -248,14 +282,14 @@ KEYWORD_ROUTING = {
         "reminder",
         "alert",
         "yaad",
-        "yaad dilao"
+        "alarm"
     ],
 
     3: [
         "calendar",
-        "event",
         "appointment",
-        "date"
+        "event",
+        "schedule"
     ],
 
     4: [
@@ -266,8 +300,8 @@ KEYWORD_ROUTING = {
     ],
 
     5: [
-        "productive",
         "productivity",
+        "productive",
         "workflow"
     ],
 
@@ -329,8 +363,7 @@ KEYWORD_ROUTING = {
     14: [
         "shopping",
         "buy",
-        "purchase",
-        "shopping list"
+        "purchase"
     ],
 
     15: [
@@ -374,9 +407,8 @@ KEYWORD_ROUTING = {
         "alarm",
         "notification",
         "notify",
-        "automatic email",
         "scheduled email",
-        "schedule email",
+        "automatic email",
         "system alarm"
     ]
 }
@@ -408,6 +440,7 @@ def initialize_database():
     with db_lock:
 
         conn = get_db()
+
         cursor = conn.cursor()
 
         cursor.execute(
@@ -447,10 +480,34 @@ initialize_database()
 
 
 # ============================================================
-# DATABASE HELPERS
+# SESSION STATE
 # ============================================================
 
-def add_contact_db(name, email):
+DEFAULT_STATE = {
+    "chat_messages": [],
+    "last_agents": [],
+    "last_results": [],
+    "generated_emails": [],
+    "manual_api_key": "",
+    "selected_agent": None
+}
+
+
+for key, value in DEFAULT_STATE.items():
+
+    if key not in st.session_state:
+
+        st.session_state[key] = value
+
+
+# ============================================================
+# CONTACT DATABASE
+# ============================================================
+
+def add_contact_db(
+    name,
+    email
+):
 
     contact_id = uuid.uuid4().hex[:10]
 
@@ -492,14 +549,19 @@ def get_contacts():
     return rows
 
 
-def delete_contact(contact_id):
+def delete_contact(
+    contact_id
+):
 
     with db_lock:
 
         conn = get_db()
 
         conn.execute(
-            "DELETE FROM contacts WHERE id = ?",
+            """
+            DELETE FROM contacts
+            WHERE id = ?
+            """,
             (contact_id,)
         )
 
@@ -507,7 +569,13 @@ def delete_contact(contact_id):
         conn.close()
 
 
-def resolve_contact(name_or_email):
+def resolve_contact(
+    name_or_email
+):
+
+    if not name_or_email:
+
+        return None
 
     value = name_or_email.lower().strip()
 
@@ -516,14 +584,17 @@ def resolve_contact(name_or_email):
     for contact in contacts:
 
         if contact["email"].lower() == value:
+
             return contact["email"]
 
         if contact["name"].lower() == value:
+
             return contact["email"]
 
     for contact in contacts:
 
         if value in contact["name"].lower():
+
             return contact["email"]
 
     return None
@@ -605,7 +676,9 @@ def get_schedules():
     return rows
 
 
-def delete_schedule(schedule_id):
+def delete_schedule(
+    schedule_id
+):
 
     with db_lock:
 
@@ -625,30 +698,7 @@ def delete_schedule(schedule_id):
 
 
 # ============================================================
-# SESSION STATE
-# ============================================================
-
-DEFAULT_STATE = {
-    "chat_messages": [],
-    "last_agents": [],
-    "last_results": [],
-    "generated_emails": [],
-    "generated_document_content": "",
-    "document_title": "BHAI AI Document",
-    "document_author": "Engr. Bilal Mehmood",
-    "manual_api_key": "",
-}
-
-
-for key, value in DEFAULT_STATE.items():
-
-    if key not in st.session_state:
-
-        st.session_state[key] = value
-
-
-# ============================================================
-# OPENAI API
+# OPENAI
 # ============================================================
 
 def get_api_key():
@@ -656,7 +706,12 @@ def get_api_key():
     key = ""
 
     try:
-        key = st.secrets.get("OPENAI_API_KEY", "")
+
+        key = st.secrets.get(
+            "OPENAI_API_KEY",
+            ""
+        )
+
     except Exception:
         pass
 
@@ -669,10 +724,7 @@ def get_api_key():
 
     if not key:
 
-        key = st.session_state.get(
-            "manual_api_key",
-            ""
-        )
+        key = st.session_state.manual_api_key
 
     return key.strip()
 
@@ -686,8 +738,7 @@ def call_openai(
     if OpenAI is None:
 
         return (
-            "OpenAI package is not installed. "
-            "Run: pip install openai"
+            "OpenAI package is not installed."
         )
 
     api_key = get_api_key()
@@ -695,8 +746,7 @@ def call_openai(
     if not api_key:
 
         return (
-            "OpenAI API key is not configured. "
-            "Please use Demo Mode or enter your API key."
+            "OpenAI API key is not configured."
         )
 
     try:
@@ -709,13 +759,14 @@ def call_openai(
 
             model=model,
 
-            instructions=system_instruction
-            or
-            """
-            You are BHAI, a master AI assistant.
-            You coordinate specialist agents.
-            Be practical, concise and helpful.
-            """,
+            instructions=(
+                system_instruction
+                or
+                """
+                You are BHAI AI,
+                a master multi-agent assistant.
+                """
+            ),
 
             input=prompt
         )
@@ -724,14 +775,16 @@ def call_openai(
 
     except Exception as e:
 
-        return f"OpenAI API Error: {e}"
+        return f"OpenAI Error: {e}"
 
 
 # ============================================================
-# ROMAN URDU NORMALIZATION
+# ROMAN URDU DATE/TIME NORMALIZATION
 # ============================================================
 
-def normalize_roman_urdu(text):
+def normalize_roman_urdu(
+    text
+):
 
     result = text
 
@@ -763,8 +816,7 @@ def normalize_roman_urdu(text):
 
         r"\bbaje\b": "",
 
-        r"\bbajay\b": "",
-
+        r"\bbajay\b": ""
     }
 
     for pattern, replacement in replacements.items():
@@ -780,14 +832,18 @@ def normalize_roman_urdu(text):
 
 
 # ============================================================
-# TIME / DATE PARSER
+# DATE/TIME PARSER
 # ============================================================
 
-def parse_schedule_from_text(text):
+def parse_schedule_from_text(
+    text
+):
 
     original = text
 
-    normalized = normalize_roman_urdu(text)
+    normalized = normalize_roman_urdu(
+        text
+    )
 
     now = datetime.now()
 
@@ -795,16 +851,17 @@ def parse_schedule_from_text(text):
 
     recurrence = None
 
+    lower = normalized.lower()
+
     # --------------------------------------------------------
     # RECURRENCE
     # --------------------------------------------------------
-
-    lower = normalized.lower()
 
     if re.search(
         r"\b(every day|daily|har roz|roz)\b",
         lower
     ):
+
         recurrence = "daily"
 
     weekdays = {
@@ -824,13 +881,36 @@ def parse_schedule_from_text(text):
             lower
         ):
 
-            recurrence = f"weekly:{short_day}"
+            recurrence = (
+                f"weekly:{short_day}"
+            )
 
     # --------------------------------------------------------
-    # EXPLICIT TIME
+    # DATEPARSER
     # --------------------------------------------------------
 
-    time_patterns = [
+    if dateparser:
+
+        try:
+
+            run_at = dateparser.parse(
+                normalized,
+                settings={
+                    "PREFER_DATES_FROM": "future",
+                    "RELATIVE_BASE": now,
+                    "RETURN_AS_TIMEZONE_AWARE": False
+                }
+            )
+
+        except Exception:
+
+            run_at = None
+
+    # --------------------------------------------------------
+    # TIME REGEX
+    # --------------------------------------------------------
+
+    patterns = [
 
         r"\b(\d{1,2}):(\d{2})\s*(am|pm)?\b",
 
@@ -842,74 +922,46 @@ def parse_schedule_from_text(text):
 
     ]
 
-    time_match = None
+    match = None
 
-    for pattern in time_patterns:
+    for pattern in patterns:
 
-        match = re.search(
+        found = re.search(
             pattern,
             normalized,
-            flags=re.IGNORECASE
+            re.IGNORECASE
         )
 
-        if match:
+        if found:
 
-            time_match = match
+            match = found
             break
 
-    # --------------------------------------------------------
-    # DATEPARSER
-    # --------------------------------------------------------
+    if match:
 
-    if dateparser:
+        groups = match.groups()
 
-        try:
-
-            settings = {
-
-                "PREFER_DATES_FROM": "future",
-
-                "RELATIVE_BASE": now,
-
-                "RETURN_AS_TIMEZONE_AWARE": False
-
-            }
-
-            parsed = dateparser.parse(
-                normalized,
-                settings=settings
-            )
-
-            if parsed:
-
-                run_at = parsed
-
-        except Exception:
-
-            run_at = None
-
-    # --------------------------------------------------------
-    # MANUAL TIME FIX
-    # --------------------------------------------------------
-
-    if time_match:
-
-        groups = time_match.groups()
-
-        hour = int(groups[0])
+        hour = int(
+            groups[0]
+        )
 
         minute = 0
 
-        ampm = None
-
-        if len(groups) >= 2 and groups[1]:
+        if len(groups) > 1 and groups[1]:
 
             try:
-                minute = int(groups[1])
-            except:
-                pass
 
-        if len(groups) >= 3:
+                minute = int(
+                    groups[1]
+                )
+
+            except Exception:
+
+                minute = 0
+
+        ampm = None
+
+        if len(groups) > 2:
 
             ampm = groups[2]
 
@@ -918,13 +970,13 @@ def parse_schedule_from_text(text):
             ampm = ampm.lower()
 
             if ampm == "pm" and hour < 12:
+
                 hour += 12
 
-            if ampm == "am" and hour == 12:
+            elif ampm == "am" and hour == 12:
+
                 hour = 0
 
-        # For Roman Urdu "5 baje", assume PM for common
-        # working/evening language when no AM/PM is given.
         elif re.search(
             r"\b(shaam|sham|raat|dopahar)\b",
             original,
@@ -932,9 +984,9 @@ def parse_schedule_from_text(text):
         ):
 
             if hour < 12:
+
                 hour += 12
 
-        # "subah 9 baje"
         elif re.search(
             r"\b(subah|sawere|savera)\b",
             original,
@@ -942,9 +994,9 @@ def parse_schedule_from_text(text):
         ):
 
             if hour == 12:
+
                 hour = 0
 
-        # If dateparser produced a date, preserve its date.
         if run_at:
 
             run_at = run_at.replace(
@@ -965,21 +1017,17 @@ def parse_schedule_from_text(text):
 
             if run_at <= now:
 
-                run_at += timedelta(days=1)
+                run_at += timedelta(
+                    days=1
+                )
 
-    # --------------------------------------------------------
-    # IF ONLY DATE WAS FOUND
-    # --------------------------------------------------------
+    if run_at and run_at <= now:
 
-    if run_at:
+        if recurrence is None:
 
-        if run_at <= now and recurrence is None:
-
-            run_at += timedelta(days=1)
-
-    # --------------------------------------------------------
-    # RETURN
-    # --------------------------------------------------------
+            run_at += timedelta(
+                days=1
+            )
 
     return {
         "scheduled": run_at is not None,
@@ -994,9 +1042,11 @@ def parse_schedule_from_text(text):
 # ROUTER
 # ============================================================
 
-def bhai_demo_router(text):
+def demo_router(
+    text
+):
 
-    text_lower = text.lower()
+    lower = text.lower()
 
     scores = {}
 
@@ -1006,24 +1056,31 @@ def bhai_demo_router(text):
 
         for keyword in keywords:
 
-            if keyword.lower() in text_lower:
+            if keyword in lower:
 
                 score += 1
 
-        if score > 0:
+        if score:
 
             scores[agent_id] = score
 
-    # Scheduler gets priority if time/schedule is present
-    schedule = parse_schedule_from_text(text)
+    schedule = parse_schedule_from_text(
+        text
+    )
 
     if schedule["scheduled"]:
 
-        scores[21] = scores.get(21, 0) + 5
+        scores[21] = (
+            scores.get(21, 0) + 5
+        )
 
     if not scores:
 
-        return [1, 4, 5]
+        return [
+            1,
+            4,
+            5
+        ]
 
     ranked = sorted(
         scores,
@@ -1034,15 +1091,15 @@ def bhai_demo_router(text):
     return ranked[:5]
 
 
-def bhai_api_router(
+def api_router(
     text,
     model
 ):
 
     prompt = f"""
-You are the routing brain of BHAI.
+You are the BHAI Master Router.
 
-Available agents:
+Select relevant agents from:
 
 1 Planner
 2 Reminder
@@ -1066,17 +1123,13 @@ Available agents:
 20 Entertainment
 21 Email Notification / Scheduler
 
-User request:
-
+User:
 {text}
 
-Return ONLY a JSON array of agent numbers.
+Return ONLY JSON.
 
 Example:
-
 [21, 9]
-
-Choose only relevant agents.
 """
 
     result = call_openai(
@@ -1093,155 +1146,91 @@ Choose only relevant agents.
 
         if match:
 
-            data = json.loads(
+            values = json.loads(
                 match.group(0)
             )
 
-            if isinstance(data, list):
-
-                return [
-                    int(x)
-                    for x in data
-                    if int(x) in AGENTS
-                ][:5]
+            return [
+                int(x)
+                for x in values
+                if int(x) in AGENTS
+            ][:5]
 
     except Exception:
         pass
 
-    return bhai_demo_router(text)
-
-
-# ============================================================
-# DEMO AGENT
-# ============================================================
-
-def run_demo_agent(
-    agent_id,
-    user_text
-):
-
-    agent = AGENTS[agent_id]
-
-    if agent_id == 21:
-
-        schedule = parse_schedule_from_text(
-            user_text
-        )
-
-        if schedule["scheduled"]:
-
-            return (
-                f"🔔 Scheduler detected a date/time: "
-                f"{schedule['run_at'].strftime('%d-%m-%Y %I:%M %p')}"
-            )
-
-        return (
-            "🔔 Email Notification Agent is ready "
-            "to schedule reminders and emails."
-        )
-
-    responses = {
-
-        1:
-            "I can convert your request into a practical daily or weekly plan.",
-
-        2:
-            "Reminder Agent can create a reminder for the requested activity.",
-
-        3:
-            "Calendar Agent can organize the requested event or appointment.",
-
-        4:
-            "Task Agent can convert your request into an actionable task.",
-
-        5:
-            "Productivity Agent can optimize your workflow.",
-
-        6:
-            "Learning Agent can prepare a learning or study plan.",
-
-        7:
-            "Research Agent can structure the required research activity.",
-
-        8:
-            "Communication Agent can prepare your message.",
-
-        9:
-            "Email Agent can prepare a professional email.",
-
-        10:
-            "Meeting Agent can prepare the meeting agenda and action points.",
-
-        11:
-            "Health Agent can organize general wellness activities.",
-
-        12:
-            "Fitness Agent can prepare a workout routine.",
-
-        13:
-            "Finance Agent can organize your finance-related activity.",
-
-        14:
-            "Shopping Agent can prepare your shopping list.",
-
-        15:
-            "Travel Agent can organize your travel plan.",
-
-        16:
-            "News Agent can organize a news-related request.",
-
-        17:
-            "Notes Agent can save and organize your notes.",
-
-        18:
-            "File Agent can prepare documents and files.",
-
-        19:
-            "Home Agent can organize home-related activities.",
-
-        20:
-            "Entertainment Agent can suggest games and entertainment."
-    }
-
-    return responses.get(
-        agent_id,
-        f"{agent['name']} processed the request."
+    return demo_router(
+        text
     )
 
 
 # ============================================================
-# API AGENT
+# AGENT EXECUTION
 # ============================================================
 
-def run_api_agent(
+def demo_agent(
     agent_id,
-    user_text,
+    prompt
+):
+
+    if agent_id == 21:
+
+        parsed = parse_schedule_from_text(
+            prompt
+        )
+
+        if parsed["scheduled"]:
+
+            return (
+                "🔔 Time detected: "
+                + parsed["run_at"].strftime(
+                    "%d %B %Y %I:%M %p"
+                )
+            )
+
+        return (
+            "Email Notification Agent is ready."
+        )
+
+    return (
+        f"{AGENTS[agent_id]['icon']} "
+        f"{AGENTS[agent_id]['name']} processed your request.\n\n"
+        f"Request: {prompt}\n\n"
+        f"Demo Mode response: "
+        f"This agent is ready for integration "
+        f"with your real workflow."
+    )
+
+
+def api_agent(
+    agent_id,
+    prompt,
     model
 ):
 
     agent = AGENTS[agent_id]
 
-    system_prompt = f"""
-You are the {agent['name']} of BHAI AI.
+    system = f"""
+You are the {agent['name']} in BHAI AI.
 
-Your role:
+Role:
 {agent['description']}
 
-Provide a useful, practical response.
+Give a practical and useful response.
 """
 
     return call_openai(
-        user_text,
+        prompt,
         model=model,
-        system_instruction=system_prompt
+        system_instruction=system
     )
 
 
 # ============================================================
-# EMAIL SENDER
+# EMAIL
 # ============================================================
 
-def get_smtp_settings():
+def smtp_settings():
 
     try:
 
@@ -1267,7 +1256,12 @@ def get_smtp_settings():
             ""
         )
 
-        return host, port, username, password
+        return (
+            host,
+            port,
+            username,
+            password
+        )
 
     except Exception:
 
@@ -1286,7 +1280,7 @@ def send_email(
 ):
 
     host, port, username, password = (
-        get_smtp_settings()
+        smtp_settings()
     )
 
     if not username or not password:
@@ -1298,15 +1292,13 @@ def send_email(
 
     try:
 
-        msg = MIMEMultipart()
+        message = MIMEMultipart()
 
-        msg["From"] = username
+        message["From"] = username
+        message["To"] = recipient
+        message["Subject"] = subject
 
-        msg["To"] = recipient
-
-        msg["Subject"] = subject
-
-        msg.attach(
+        message.attach(
             MIMEText(
                 body,
                 "plain",
@@ -1330,7 +1322,7 @@ def send_email(
         server.sendmail(
             username,
             recipient,
-            msg.as_string()
+            message.as_string()
         )
 
         server.quit()
@@ -1344,15 +1336,15 @@ def send_email(
 
         return (
             False,
-            f"Email sending failed: {e}"
+            str(e)
         )
 
 
 # ============================================================
-# SCHEDULE EXECUTION
+# SCHEDULER
 # ============================================================
 
-def execute_scheduled_action(
+def execute_schedule(
     schedule_id
 ):
 
@@ -1375,99 +1367,52 @@ def execute_scheduled_action(
     if row["status"] != "Scheduled":
         return
 
-    action_type = row["action_type"]
-
     success = False
 
-    message = ""
+    if row["action_type"] == "email":
 
-    # --------------------------------------------------------
-    # EMAIL
-    # --------------------------------------------------------
-
-    if action_type == "email":
-
-        success, message = send_email(
+        success, _ = send_email(
             row["recipient"],
             row["subject"] or "BHAI Notification",
             row["message"] or ""
         )
 
-    # --------------------------------------------------------
-    # REMINDER
-    # --------------------------------------------------------
+    else:
 
-    elif action_type in (
-        "reminder",
-        "task",
-        "notification"
-    ):
-
-        # Email notification if recipient exists
         if row["recipient"]:
 
-            success, message = send_email(
+            success, _ = send_email(
                 row["recipient"],
                 row["subject"] or "BHAI Reminder",
-                row["message"] or row["title"] or ""
+                row["message"] or row["title"]
             )
 
         else:
 
             success = True
 
-            message = (
-                "Reminder triggered inside BHAI."
-            )
-
-    # --------------------------------------------------------
-    # UPDATE DATABASE
-    # --------------------------------------------------------
-
     with db_lock:
 
         conn = get_db()
 
-        if success:
-
-            conn.execute(
-                """
-                UPDATE schedules
-                SET
-                    status = ?,
-                    last_run = ?
-                WHERE id = ?
-                """,
-                (
-                    "Completed",
-                    datetime.now().isoformat(),
-                    schedule_id
-                )
+        conn.execute(
+            """
+            UPDATE schedules
+            SET
+                status = ?,
+                last_run = ?
+            WHERE id = ?
+            """,
+            (
+                "Completed" if success else "Scheduled",
+                datetime.now().isoformat(),
+                schedule_id
             )
-
-        else:
-
-            conn.execute(
-                """
-                UPDATE schedules
-                SET
-                    last_run = ?
-                WHERE id = ?
-                """,
-                (
-                    datetime.now().isoformat(),
-                    schedule_id
-                )
-            )
+        )
 
         conn.commit()
-
         conn.close()
 
-
-# ============================================================
-# APSCHEDULER
-# ============================================================
 
 @st.cache_resource
 def get_scheduler():
@@ -1485,7 +1430,7 @@ def get_scheduler():
     return scheduler
 
 
-def register_schedule_with_scheduler(
+def register_schedule(
     schedule_id,
     run_at,
     recurrence=None
@@ -1494,6 +1439,7 @@ def register_schedule_with_scheduler(
     scheduler = get_scheduler()
 
     if scheduler is None:
+
         return False
 
     try:
@@ -1501,7 +1447,7 @@ def register_schedule_with_scheduler(
         if recurrence == "daily":
 
             scheduler.add_job(
-                execute_scheduled_action,
+                execute_schedule,
                 CronTrigger(
                     hour=run_at.hour,
                     minute=run_at.minute,
@@ -1516,10 +1462,12 @@ def register_schedule_with_scheduler(
             "weekly:"
         ):
 
-            weekday = recurrence.split(":")[1]
+            weekday = recurrence.split(
+                ":"
+            )[1]
 
             scheduler.add_job(
-                execute_scheduled_action,
+                execute_schedule,
                 CronTrigger(
                     day_of_week=weekday,
                     hour=run_at.hour,
@@ -1534,7 +1482,7 @@ def register_schedule_with_scheduler(
         else:
 
             scheduler.add_job(
-                execute_scheduled_action,
+                execute_schedule,
                 DateTrigger(
                     run_date=run_at,
                     timezone="Asia/Karachi"
@@ -1553,16 +1501,12 @@ def register_schedule_with_scheduler(
 
 def restore_schedules():
 
-    scheduler = get_scheduler()
-
-    if scheduler is None:
-        return
-
     rows = get_schedules()
 
     for row in rows:
 
         if row["status"] != "Scheduled":
+
             continue
 
         try:
@@ -1571,13 +1515,14 @@ def restore_schedules():
                 row["run_at"]
             )
 
-            if row["recurrence"] is None:
+            if (
+                row["recurrence"] is None
+                and run_at <= datetime.now()
+            ):
 
-                if run_at <= datetime.now():
+                continue
 
-                    continue
-
-            register_schedule_with_scheduler(
+            register_schedule(
                 row["id"],
                 run_at,
                 row["recurrence"]
@@ -1591,108 +1536,12 @@ restore_schedules()
 
 
 # ============================================================
-# CREATE AUTOMATIC SCHEDULE
+# AUTOMATIC SCHEDULING
 # ============================================================
 
-def create_automatic_schedule(
-    user_text,
-    action_type="notification",
-    title=None,
-    message=None,
-    recipient=None,
-    subject=None
+def extract_recipient(
+    text
 ):
-
-    parsed = parse_schedule_from_text(
-        user_text
-    )
-
-    if not parsed["scheduled"]:
-
-        return {
-            "success": False,
-            "message": "No date/time detected."
-        }
-
-    run_at = parsed["run_at"]
-
-    # --------------------------------------------------------
-    # CONTACT RESOLUTION
-    # --------------------------------------------------------
-
-    if recipient:
-
-        resolved = resolve_contact(
-            recipient
-        )
-
-        if resolved:
-
-            recipient = resolved
-
-    # --------------------------------------------------------
-    # CREATE DB RECORD
-    # --------------------------------------------------------
-
-    schedule_id = add_schedule_db(
-
-        action_type=action_type,
-
-        title=title
-        or
-        "BHAI Scheduled Task",
-
-        message=message
-        or
-        user_text,
-
-        recipient=recipient
-        or
-        "",
-
-        subject=subject
-        or
-        "BHAI Notification",
-
-        run_at=run_at,
-
-        recurrence=parsed["recurrence"]
-    )
-
-    # --------------------------------------------------------
-    # REGISTER
-    # --------------------------------------------------------
-
-    registered = register_schedule_with_scheduler(
-
-        schedule_id,
-
-        run_at,
-
-        parsed["recurrence"]
-    )
-
-    return {
-
-        "success": True,
-
-        "schedule_id": schedule_id,
-
-        "run_at": run_at,
-
-        "recurrence": parsed["recurrence"],
-
-        "registered": registered
-    }
-
-
-# ============================================================
-# NATURAL LANGUAGE EMAIL DETECTION
-# ============================================================
-
-def extract_recipient_from_text(text):
-
-    # First try direct email address
 
     email_match = re.search(
         r"[\w\.-]+@[\w\.-]+\.\w+",
@@ -1703,7 +1552,6 @@ def extract_recipient_from_text(text):
 
         return email_match.group(0)
 
-    # Search contact names
     contacts = get_contacts()
 
     lower = text.lower()
@@ -1717,134 +1565,129 @@ def extract_recipient_from_text(text):
     return None
 
 
-def looks_like_email_request(text):
+def is_email_request(
+    text
+):
 
     lower = text.lower()
 
-    email_words = [
-
-        "email",
-
-        "e-mail",
-
-        "mail",
-
-        "email kar",
-
-        "send email",
-
-        "email bhej",
-
-        "mail bhej",
-
-        "email send"
-
-    ]
-
     return any(
-        word in lower
-        for word in email_words
+        x in lower
+        for x in [
+            "email",
+            "e-mail",
+            "send email",
+            "email kar",
+            "email bhej",
+            "mail bhej"
+        ]
     )
 
 
+def automatic_schedule(
+    user_text
+):
+
+    parsed = parse_schedule_from_text(
+        user_text
+    )
+
+    if not parsed["scheduled"]:
+
+        return None
+
+    recipient = extract_recipient(
+        user_text
+    )
+
+    if is_email_request(
+        user_text
+    ):
+
+        action_type = "email"
+
+    else:
+
+        action_type = "reminder"
+
+    schedule_id = add_schedule_db(
+
+        action_type=action_type,
+
+        title=(
+            "Scheduled Email"
+            if action_type == "email"
+            else "Scheduled Reminder"
+        ),
+
+        message=user_text,
+
+        recipient=recipient or "",
+
+        subject="BHAI Automatic Notification",
+
+        run_at=parsed["run_at"],
+
+        recurrence=parsed["recurrence"]
+    )
+
+    registered = register_schedule(
+        schedule_id,
+        parsed["run_at"],
+        parsed["recurrence"]
+    )
+
+    return {
+        "id": schedule_id,
+        "run_at": parsed["run_at"],
+        "recurrence": parsed["recurrence"],
+        "recipient": recipient,
+        "action_type": action_type,
+        "registered": registered
+    }
+
+
 # ============================================================
-# MASTER PROCESSOR
+# MASTER PROCESS
 # ============================================================
 
-def process_bhai_chat(
+def process_master(
     user_text,
     mode,
     model
 ):
 
-    schedule = parse_schedule_from_text(
-        user_text
-    )
-
-    # --------------------------------------------------------
-    # ROUTING
-    # --------------------------------------------------------
-
     if mode == "API Mode":
 
-        agent_ids = bhai_api_router(
+        agents = api_router(
             user_text,
             model
         )
 
     else:
 
-        agent_ids = bhai_demo_router(
+        agents = demo_router(
             user_text
         )
 
-    # --------------------------------------------------------
-    # AUTOMATIC SCHEDULING
-    # --------------------------------------------------------
+    scheduled = automatic_schedule(
+        user_text
+    )
 
-    if schedule["scheduled"]:
+    if scheduled and 21 not in agents:
 
-        recipient = extract_recipient_from_text(
-            user_text
+        agents.insert(
+            0,
+            21
         )
-
-        is_email = looks_like_email_request(
-            user_text
-        )
-
-        if is_email:
-
-            result = create_automatic_schedule(
-
-                user_text=user_text,
-
-                action_type="email",
-
-                title="Scheduled Email",
-
-                message=user_text,
-
-                recipient=recipient,
-
-                subject="BHAI Scheduled Email"
-            )
-
-        else:
-
-            result = create_automatic_schedule(
-
-                user_text=user_text,
-
-                action_type="reminder",
-
-                title="Scheduled Reminder",
-
-                message=user_text,
-
-                recipient=recipient,
-
-                subject="BHAI Reminder"
-            )
-
-        # Add scheduler agent
-        if 21 not in agent_ids:
-
-            agent_ids.insert(
-                0,
-                21
-            )
-
-    # --------------------------------------------------------
-    # EXECUTE AGENTS
-    # --------------------------------------------------------
 
     results = []
 
-    for agent_id in agent_ids:
+    for agent_id in agents:
 
         if mode == "API Mode":
 
-            output = run_api_agent(
+            result = api_agent(
                 agent_id,
                 user_text,
                 model
@@ -1852,79 +1695,50 @@ def process_bhai_chat(
 
         else:
 
-            output = run_demo_agent(
+            result = demo_agent(
                 agent_id,
                 user_text
             )
 
         results.append(
             {
-                "agent_id": agent_id,
-                "agent": AGENTS[agent_id]["name"],
-                "output": output
+                "id": agent_id,
+                "name": AGENTS[agent_id]["name"],
+                "result": result
             }
         )
 
-    # --------------------------------------------------------
-    # FINAL SUMMARY
-    # --------------------------------------------------------
-
-    summary_parts = []
-
-    summary_parts.append(
-        f"BHAI activated {len(agent_ids)} agent(s)."
+    summary = (
+        f"BHAI activated {len(agents)} agent(s)."
     )
 
-    if schedule["scheduled"]:
+    if scheduled:
 
-        scheduled_time = schedule["run_at"].strftime(
-            "%d %B %Y at %I:%M %p"
+        summary += (
+            "\n\n⏰ Scheduled: "
+            + scheduled["run_at"].strftime(
+                "%d %B %Y at %I:%M %p"
+            )
         )
 
-        recurrence_text = ""
+        if scheduled["recurrence"]:
 
-        if schedule["recurrence"]:
-
-            recurrence_text = (
-                f" | Recurrence: "
-                f"{schedule['recurrence']}"
+            summary += (
+                "\n🔁 Repeat: "
+                + scheduled["recurrence"]
             )
 
-        summary_parts.append(
-            f"⏰ Automatically scheduled for "
-            f"{scheduled_time}{recurrence_text}."
-        )
+        if scheduled["recipient"]:
 
-        if looks_like_email_request(
-            user_text
-        ):
-
-            if extract_recipient_from_text(
-                user_text
-            ):
-
-                summary_parts.append(
-                    "📧 Recipient was detected from Contacts/email."
-                )
-
-            else:
-
-                summary_parts.append(
-                    "⚠️ No recipient email was detected. "
-                    "Add the recipient in Contacts."
-                )
-
-    else:
-
-        summary_parts.append(
-            "No explicit date/time was detected, "
-            "so no automatic schedule was created."
-        )
+            summary += (
+                "\n📧 Recipient: "
+                + scheduled["recipient"]
+            )
 
     return (
-        agent_ids,
+        agents,
         results,
-        "\n\n".join(summary_parts)
+        summary
     )
 
 
@@ -1934,31 +1748,25 @@ def process_bhai_chat(
 
 def generate_email(
     purpose,
-    recipient_name,
+    recipient,
     tone,
-    model,
-    mode
+    mode,
+    model
 ):
 
     prompt = f"""
-Create a professional email.
+Write a professional email.
 
 Purpose:
 {purpose}
 
 Recipient:
-{recipient_name}
+{recipient}
 
 Tone:
 {tone}
 
-Include:
-- Subject
-- Greeting
-- Clear body
-- Professional closing
-
-Return the complete email.
+Include subject, greeting, body and closing.
 """
 
     if mode == "API Mode":
@@ -1973,14 +1781,13 @@ Return the complete email.
         result = f"""
 Subject: {purpose}
 
-Dear {recipient_name},
+Dear {recipient},
 
 I hope you are doing well.
 
 I am writing regarding {purpose}.
 
-Kindly consider the above request and let me know if
-any further information is required.
+Kindly consider the above request.
 
 Thank you for your time and consideration.
 
@@ -1991,18 +1798,14 @@ AI Course Director
 PITAC Regional Center Karachi, Sindh
 """
 
-    st.session_state.generated_emails.append(
-        result
-    )
-
     return result
 
 
 # ============================================================
-# WORD DOCUMENT
+# WORD
 # ============================================================
 
-def create_word_document(
+def create_word(
     title,
     content,
     author
@@ -2016,7 +1819,7 @@ def create_word_document(
 
     document.add_heading(
         title,
-        level=0
+        0
     )
 
     document.add_paragraph(
@@ -2027,12 +1830,12 @@ def create_word_document(
         f"Date: {datetime.now().strftime('%d %B %Y')}"
     )
 
-    document.add_paragraph("")
-
-    for paragraph in content.split("\n"):
+    for line in content.split(
+        "\n"
+    ):
 
         document.add_paragraph(
-            paragraph
+            line
         )
 
     output = io.BytesIO()
@@ -2047,10 +1850,10 @@ def create_word_document(
 
 
 # ============================================================
-# PDF DOCUMENT
+# PDF
 # ============================================================
 
-def create_pdf_document(
+def create_pdf(
     title,
     content,
     author
@@ -2062,53 +1865,39 @@ def create_pdf_document(
 
     output = io.BytesIO()
 
-    document = SimpleDocTemplate(
+    pdf = SimpleDocTemplate(
         output,
         pagesize=A4
     )
 
     styles = getSampleStyleSheet()
 
-    story = []
+    story = [
 
-    story.append(
         Paragraph(
             title,
             styles["Title"]
-        )
-    )
+        ),
 
-    story.append(
         Spacer(
             1,
-            12
-        )
-    )
+            15
+        ),
 
-    story.append(
         Paragraph(
             f"Author: {author}",
             styles["Normal"]
-        )
-    )
+        ),
 
-    story.append(
-        Paragraph(
-            datetime.now().strftime(
-                "%d %B %Y"
-            ),
-            styles["Normal"]
-        )
-    )
-
-    story.append(
         Spacer(
             1,
-            20
+            15
         )
-    )
+    ]
 
-    for line in content.split("\n"):
+    for line in content.split(
+        "\n"
+    ):
 
         if line.strip():
 
@@ -2129,7 +1918,7 @@ def create_pdf_document(
                 )
             )
 
-    document.build(
+    pdf.build(
         story
     )
 
@@ -2149,13 +1938,13 @@ with st.sidebar:
     )
 
     st.caption(
-        "20-Agent Intelligent Daily Routine Automation System"
+        "20-Agent Intelligent Daily Routine Automation"
     )
 
     st.divider()
 
     mode = st.radio(
-        "Operating Mode",
+        "⚙️ Mode",
         [
             "Demo Mode",
             "API Mode"
@@ -2169,33 +1958,146 @@ with st.sidebar:
 
     if mode == "API Mode":
 
-        api_key = st.text_input(
-            "OpenAI API Key",
-            type="password",
-            value=st.session_state.manual_api_key
+        st.session_state.manual_api_key = (
+            st.text_input(
+                "OpenAI API Key",
+                value=st.session_state.manual_api_key,
+                type="password"
+            )
         )
-
-        st.session_state.manual_api_key = api_key
 
     st.divider()
 
+    # ========================================================
+    # MAIN NAVIGATION
+    # ========================================================
+
     st.markdown(
-        "### 🧭 Navigation"
+        "### 🧭 MAIN NAVIGATION"
     )
 
-    page = st.radio(
-        "Select Page",
-        [
-            "Dashboard",
-            "BHAI Master",
-            "BHAI Chatbot",
-            "Agent Navigation",
-            "Reminders & Schedules",
-            "Contacts",
-            "Email Generator",
-            "Word/PDF Generator"
-        ]
+    if st.button(
+        "🏠 Dashboard",
+        use_container_width=True
+    ):
+
+        st.session_state.selected_agent = None
+
+        st.session_state.page = "Dashboard"
+
+        st.rerun()
+
+    if st.button(
+        "🧠 BHAI Master",
+        use_container_width=True
+    ):
+
+        st.session_state.selected_agent = None
+
+        st.session_state.page = "BHAI Master"
+
+        st.rerun()
+
+    if st.button(
+        "💬 BHAI Chatbot",
+        use_container_width=True
+    ):
+
+        st.session_state.selected_agent = None
+
+        st.session_state.page = "BHAI Chatbot"
+
+        st.rerun()
+
+    st.divider()
+
+    # ========================================================
+    # ALL AGENTS
+    # ========================================================
+
+    st.markdown(
+        "### 🤖 ALL AGENTS"
     )
+
+    for agent_id, agent in AGENTS.items():
+
+        if st.button(
+            f"{agent['icon']} {agent['name']}",
+            key=f"sidebar_agent_{agent_id}",
+            use_container_width=True
+        ):
+
+            st.session_state.selected_agent = agent_id
+
+            st.session_state.page = "Agent"
+
+            st.rerun()
+
+    st.divider()
+
+    # ========================================================
+    # TOOLS
+    # ========================================================
+
+    st.markdown(
+        "### 🛠️ TOOLS"
+    )
+
+    if st.button(
+        "⏰ Reminders & Schedules",
+        use_container_width=True
+    ):
+
+        st.session_state.selected_agent = None
+
+        st.session_state.page = "Schedules"
+
+        st.rerun()
+
+    if st.button(
+        "👤 Contacts",
+        use_container_width=True
+    ):
+
+        st.session_state.selected_agent = None
+
+        st.session_state.page = "Contacts"
+
+        st.rerun()
+
+    if st.button(
+        "📧 Email Generator",
+        use_container_width=True
+    ):
+
+        st.session_state.selected_agent = None
+
+        st.session_state.page = "Email Generator"
+
+        st.rerun()
+
+    if st.button(
+        "📄 Word/PDF Generator",
+        use_container_width=True
+    ):
+
+        st.session_state.selected_agent = None
+
+        st.session_state.page = "Documents"
+
+        st.rerun()
+
+
+# ============================================================
+# DEFAULT PAGE
+# ============================================================
+
+if "page" not in st.session_state:
+
+    st.session_state.page = "Dashboard"
+
+
+current_page = st.session_state.page
 
 
 # ============================================================
@@ -2217,22 +2119,22 @@ st.markdown(
 # DASHBOARD
 # ============================================================
 
-if page == "Dashboard":
+if current_page == "Dashboard":
 
     st.header(
-        "📊 BHAI AI Dashboard"
+        "🏠 Dashboard"
     )
 
     schedules = get_schedules()
 
     contacts = get_contacts()
 
-    active_schedules = [
+    active = [
         x for x in schedules
         if x["status"] == "Scheduled"
     ]
 
-    completed_schedules = [
+    completed = [
         x for x in schedules
         if x["status"] == "Completed"
     ]
@@ -2240,13 +2142,13 @@ if page == "Dashboard":
     col1, col2, col3, col4 = st.columns(4)
 
     col1.metric(
-        "AI Agents",
+        "Agents",
         "20"
     )
 
     col2.metric(
         "Scheduled",
-        len(active_schedules)
+        len(active)
     )
 
     col3.metric(
@@ -2256,36 +2158,29 @@ if page == "Dashboard":
 
     col4.metric(
         "Completed",
-        len(completed_schedules)
+        len(completed)
     )
 
     st.divider()
 
     st.subheader(
-        "🧠 How BHAI Works"
+        "🧠 BHAI Architecture"
     )
 
     st.markdown(
         """
-        **User Command → BHAI Master → Intent Detection → Agent Routing → Date/Time Detection → Scheduler → Action**
+        **User → BHAI Master → Intent Detection → Agent Router → Specialist Agent → Scheduler → Action**
+
+        If a date/time is mentioned, BHAI automatically detects it.
 
         Example:
 
         `Kal 10 baje Director ko AI workshop proposal email kar dena.`
 
-        BHAI automatically detects:
+        becomes:
 
-        - 📧 Email requirement
-        - 👤 Recipient
-        - 📅 Tomorrow
-        - ⏰ 10:00 AM
-        - 🔔 Scheduler Agent
-        - 📤 Email action
+        **Email Agent + Email Notification Agent + Automatic Schedule**
         """
-    )
-
-    st.info(
-        "Tip: Save your contacts first. Then you can simply mention a person's name in your command."
     )
 
 
@@ -2293,40 +2188,22 @@ if page == "Dashboard":
 # BHAI MASTER
 # ============================================================
 
-elif page == "BHAI Master":
+elif current_page == "BHAI Master":
 
     st.header(
         "🧠 BHAI Master Agent"
     )
 
     st.write(
-        "Give BHAI any task. If you mention a date/time, BHAI will automatically create a schedule."
+        "Give one natural-language command and BHAI will decide which agents are required."
     )
 
-    examples = [
-        "Kal 10 baje Director ko AI workshop proposal email kar dena.",
-        "Aaj 5 PM par mujhe Python class yaad dilana.",
-        "15 October ko 2 PM par Director ko workshop proposal send karna.",
-        "Har Monday 9 AM par weekly meeting ka reminder email bhejna.",
-        "Tomorrow at 11 AM prepare my daily plan."
-    ]
-
-    st.subheader(
-        "💡 Example Commands"
-    )
-
-    for example in examples:
-
-        st.code(
-            example
+    command = st.text_area(
+        "Your Command",
+        height=150,
+        placeholder=(
+            "Kal 10 baje Director ko AI workshop proposal email kar dena."
         )
-
-    st.divider()
-
-    user_command = st.text_area(
-        "Enter command for BHAI",
-        height=130,
-        placeholder="Example: Kal 10 baje Director ko email kar dena."
     )
 
     if st.button(
@@ -2334,7 +2211,7 @@ elif page == "BHAI Master":
         type="primary"
     ):
 
-        if not user_command.strip():
+        if not command.strip():
 
             st.warning(
                 "Please enter a command."
@@ -2343,94 +2220,75 @@ elif page == "BHAI Master":
         else:
 
             with st.spinner(
-                "BHAI is processing..."
+                "BHAI is thinking..."
             ):
 
-                agent_ids, results, summary = (
-                    process_bhai_chat(
-                        user_command,
-                        mode,
-                        model
-                    )
+                agents, results, summary = process_master(
+                    command,
+                    mode,
+                    model
                 )
 
-            st.session_state.last_agents = agent_ids
+            st.session_state.last_agents = agents
 
             st.session_state.last_results = results
 
             st.success(
-                "BHAI command processed successfully."
-            )
-
-            st.markdown(
-                "### 🧠 BHAI Summary"
+                "Command processed."
             )
 
             st.info(
                 summary
             )
 
-            st.markdown(
-                "### 🤖 Activated Agents"
+            st.subheader(
+                "🤖 Activated Agents"
             )
 
-            for agent_id in agent_ids:
+            for agent_id in agents:
 
                 st.write(
                     f"{AGENTS[agent_id]['icon']} "
-                    f"**{AGENTS[agent_id]['name']}**"
+                    f"{AGENTS[agent_id]['name']}"
                 )
 
-            st.markdown(
-                "### 📋 Agent Results"
+            st.subheader(
+                "📋 Results"
             )
 
             for result in results:
 
                 with st.expander(
-                    f"{AGENTS[result['agent_id']]['icon']} "
-                    f"{result['agent']}"
+                    result["name"]
                 ):
 
                     st.write(
-                        result["output"]
+                        result["result"]
                     )
 
 
 # ============================================================
-# BHAI CHATBOT
+# CHATBOT
 # ============================================================
 
-elif page == "BHAI Chatbot":
+elif current_page == "BHAI Chatbot":
 
     st.header(
         "💬 BHAI Chatbot"
     )
 
-    st.caption(
-        "Chat naturally with BHAI. Time mentioned in your message is automatically scheduled."
-    )
-
     for message in st.session_state.chat_messages:
 
-        if message["role"] == "user":
+        with st.chat_message(
+            message["role"]
+        ):
 
-            st.chat_message(
-                "user"
-            ).write(
-                message["content"]
-            )
-
-        else:
-
-            st.chat_message(
-                "assistant"
-            ).write(
+            st.write(
                 message["content"]
             )
 
     prompt = st.chat_input(
-        "Ask BHAI anything..."
+        "Talk to BHAI..."
     )
 
     if prompt:
@@ -2442,32 +2300,27 @@ elif page == "BHAI Chatbot":
             }
         )
 
-        agent_ids, results, summary = (
-            process_bhai_chat(
-                prompt,
-                mode,
-                model
-            )
+        agents, results, summary = process_master(
+            prompt,
+            mode,
+            model
         )
 
-        response_text = summary
+        response = summary
 
-        if results:
+        for result in results:
 
-            response_text += "\n\n"
-
-            for result in results:
-
-                response_text += (
-                    f"{AGENTS[result['agent_id']]['icon']} "
-                    f"**{result['agent']}**: "
-                    f"{result['output']}\n\n"
-                )
+            response += (
+                "\n\n"
+                + result["name"]
+                + ":\n"
+                + result["result"]
+            )
 
         st.session_state.chat_messages.append(
             {
                 "role": "assistant",
-                "content": response_text
+                "content": response
             }
         )
 
@@ -2475,395 +2328,469 @@ elif page == "BHAI Chatbot":
 
 
 # ============================================================
-# AGENT NAVIGATION
+# INDIVIDUAL AGENT PAGE
 # ============================================================
 
-elif page == "Agent Navigation":
+elif current_page == "Agent":
 
-    st.header(
-        "🧭 Agent Navigation"
-    )
+    agent_id = st.session_state.selected_agent
 
-    st.write(
-        "Select any specialist agent."
-    )
+    if agent_id not in AGENTS:
 
-    cols = st.columns(3)
-
-    for index, agent_id in enumerate(AGENTS):
-
-        agent = AGENTS[agent_id]
-
-        with cols[index % 3]:
-
-            st.markdown(
-                f"""
-                <div class="agent-card">
-
-                <h3>
-                {agent['icon']} {agent['name']}
-                </h3>
-
-                <p>
-                {agent['description']}
-                </p>
-
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-            with st.expander(
-                "Open Agent"
-            ):
-
-                agent_prompt = st.text_area(
-                    f"Task for {agent['name']}",
-                    key=f"agent_prompt_{agent_id}",
-                    height=100
-                )
-
-                if st.button(
-                    f"Run {agent['name']}",
-                    key=f"run_agent_{agent_id}"
-                ):
-
-                    if mode == "API Mode":
-
-                        result = run_api_agent(
-                            agent_id,
-                            agent_prompt,
-                            model
-                        )
-
-                    else:
-
-                        result = run_demo_agent(
-                            agent_id,
-                            agent_prompt
-                        )
-
-                    st.success(
-                        "Agent executed."
-                    )
-
-                    st.write(
-                        result
-                    )
-
-
-# ============================================================
-# REMINDERS & SCHEDULES
-# ============================================================
-
-elif page == "Reminders & Schedules":
-
-    st.header(
-        "⏰ Reminders & Automatic Schedules"
-    )
-
-    st.info(
-        "BHAI automatically creates a schedule when you mention a date/time in your command."
-    )
-
-    st.subheader(
-        "➕ Manual Schedule"
-    )
-
-    with st.form(
-        "manual_schedule_form"
-    ):
-
-        title = st.text_input(
-            "Task / Reminder Title"
-        )
-
-        message = st.text_area(
-            "Message"
-        )
-
-        schedule_date = st.date_input(
-            "Date",
-            value=datetime.now().date()
-        )
-
-        schedule_time = st.time_input(
-            "Time"
-        )
-
-        action_type = st.selectbox(
-            "Action",
-            [
-                "reminder",
-                "task",
-                "email",
-                "notification"
-            ]
-        )
-
-        recipient = st.text_input(
-            "Recipient Email (optional)"
-        )
-
-        subject = st.text_input(
-            "Email Subject"
-        )
-
-        recurrence = st.selectbox(
-            "Repeat",
-            [
-                "None",
-                "Daily",
-                "Every Monday",
-                "Every Tuesday",
-                "Every Wednesday",
-                "Every Thursday",
-                "Every Friday",
-                "Every Saturday",
-                "Every Sunday"
-            ]
-        )
-
-        submit = st.form_submit_button(
-            "🔔 Schedule"
-        )
-
-    if submit:
-
-        run_at = datetime.combine(
-            schedule_date,
-            schedule_time
-        )
-
-        recurrence_value = None
-
-        if recurrence == "Daily":
-
-            recurrence_value = "daily"
-
-        elif recurrence.startswith(
-            "Every "
-        ):
-
-            day = recurrence.replace(
-                "Every ",
-                ""
-            ).lower()
-
-            recurrence_value = (
-                "weekly:"
-                + day[:3]
-            )
-
-        schedule_id = add_schedule_db(
-
-            action_type=action_type,
-
-            title=title,
-
-            message=message,
-
-            recipient=recipient,
-
-            subject=subject,
-
-            run_at=run_at,
-
-            recurrence=recurrence_value
-        )
-
-        register_schedule_with_scheduler(
-            schedule_id,
-            run_at,
-            recurrence_value
-        )
-
-        st.success(
-            f"Scheduled successfully for {run_at.strftime('%d %B %Y %I:%M %p')}"
-        )
-
-    st.divider()
-
-    st.subheader(
-        "📋 Existing Schedules"
-    )
-
-    schedules = get_schedules()
-
-    if not schedules:
-
-        st.info(
-            "No schedules found."
+        st.warning(
+            "Please select an agent from the left sidebar."
         )
 
     else:
 
-        for schedule in schedules:
+        agent = AGENTS[agent_id]
 
-            with st.container(border=True):
+        st.header(
+            f"{agent['icon']} {agent['name']}"
+        )
 
-                col1, col2, col3 = st.columns(
-                    [4, 3, 1]
-                )
+        st.write(
+            agent["description"]
+        )
 
-                with col1:
+        st.divider()
 
-                    st.markdown(
-                        f"### {schedule['title']}"
+        # ----------------------------------------------------
+        # SPECIAL UI FOR SCHEDULER AGENT
+        # ----------------------------------------------------
+
+        if agent_id == 21:
+
+            st.subheader(
+                "🔔 Automatic Notification Scheduler"
+            )
+
+            st.info(
+                "Simply write your task and mention the date/time. BHAI will automatically schedule it."
+            )
+
+            st.code(
+                "Kal 10 baje Director ko AI workshop proposal email kar dena."
+            )
+
+            st.code(
+                "Aaj 5 PM par mujhe Python class yaad dilana."
+            )
+
+            st.code(
+                "Har Monday 9 AM par weekly meeting ka reminder email bhejna."
+            )
+
+            scheduler_command = st.text_area(
+                "Scheduler Command",
+                height=150
+            )
+
+            if st.button(
+                "⏰ Schedule Automatically",
+                type="primary"
+            ):
+
+                if scheduler_command.strip():
+
+                    result = automatic_schedule(
+                        scheduler_command
                     )
 
-                    st.write(
-                        schedule["message"]
-                    )
+                    if result:
 
-                with col2:
-
-                    st.write(
-                        f"**Run:** {schedule['run_at']}"
-                    )
-
-                    st.write(
-                        f"**Type:** {schedule['action_type']}"
-                    )
-
-                    st.write(
-                        f"**Status:** {schedule['status']}"
-                    )
-
-                    if schedule["recurrence"]:
-
-                        st.write(
-                            f"**Repeat:** {schedule['recurrence']}"
+                        st.success(
+                            "Schedule created successfully."
                         )
 
-                with col3:
+                        st.write(
+                            "📅 Date:",
+                            result["run_at"].strftime(
+                                "%d %B %Y"
+                            )
+                        )
 
-                    if schedule["status"] == "Scheduled":
+                        st.write(
+                            "⏰ Time:",
+                            result["run_at"].strftime(
+                                "%I:%M %p"
+                            )
+                        )
 
-                        if st.button(
-                            "Cancel",
-                            key=f"cancel_{schedule['id']}"
-                        ):
+                        st.write(
+                            "📧 Recipient:",
+                            result["recipient"]
+                            or
+                            "Not specified"
+                        )
 
-                            delete_schedule(
-                                schedule["id"]
+                        st.write(
+                            "🔁 Repeat:",
+                            result["recurrence"]
+                            or
+                            "One time"
+                        )
+
+                    else:
+
+                        st.warning(
+                            "No date/time detected."
+                        )
+
+        else:
+
+            # ------------------------------------------------
+            # NORMAL AGENT PAGE
+            # ------------------------------------------------
+
+            st.subheader(
+                f"{agent['icon']} {agent['name']} Workspace"
+            )
+
+            task = st.text_area(
+                "Enter your task",
+                height=180,
+                placeholder=(
+                    f"Tell the {agent['name']} what you want..."
+                )
+            )
+
+            col1, col2 = st.columns(
+                [1, 1]
+            )
+
+            with col1:
+
+                if st.button(
+                    f"🚀 Run {agent['name']}",
+                    type="primary",
+                    use_container_width=True
+                ):
+
+                    if not task.strip():
+
+                        st.warning(
+                            "Please enter a task."
+                        )
+
+                    else:
+
+                        # Automatically detect scheduling
+                        schedule = parse_schedule_from_text(
+                            task
+                        )
+
+                        if mode == "API Mode":
+
+                            result = api_agent(
+                                agent_id,
+                                task,
+                                model
                             )
 
-                            st.rerun()
+                        else:
+
+                            result = demo_agent(
+                                agent_id,
+                                task
+                            )
+
+                        st.success(
+                            "Agent executed successfully."
+                        )
+
+                        st.markdown(
+                            "### 📋 Agent Result"
+                        )
+
+                        st.write(
+                            result
+                        )
+
+                        if schedule["scheduled"]:
+
+                            automatic = automatic_schedule(
+                                task
+                            )
+
+                            if automatic:
+
+                                st.markdown(
+                                    "### ⏰ Automatic Schedule"
+                                )
+
+                                st.success(
+                                    "Time detected and task scheduled automatically."
+                                )
+
+                                st.write(
+                                    "📅",
+                                    automatic["run_at"].strftime(
+                                        "%d %B %Y"
+                                    )
+                                )
+
+                                st.write(
+                                    "⏰",
+                                    automatic["run_at"].strftime(
+                                        "%I:%M %p"
+                                    )
+                                )
+
+            with col2:
+
+                st.markdown(
+                    "### 💡 Example"
+                )
+
+                examples = {
+
+                    1:
+                        "Plan my tomorrow from 9 AM to 5 PM.",
+
+                    2:
+                        "Remind me tomorrow at 5 PM about Python class.",
+
+                    3:
+                        "Schedule a meeting tomorrow at 10 AM.",
+
+                    4:
+                        "Create a task to prepare workshop proposal.",
+
+                    5:
+                        "Improve my daily productivity.",
+
+                    6:
+                        "Create a Python learning plan.",
+
+                    7:
+                        "Prepare a research workflow.",
+
+                    8:
+                        "Write a professional message.",
+
+                    9:
+                        "Write an email to the Director.",
+
+                    10:
+                        "Prepare agenda for AI meeting.",
+
+                    11:
+                        "Create a general wellness routine.",
+
+                    12:
+                        "Create a weekly workout plan.",
+
+                    13:
+                        "Create a monthly budget.",
+
+                    14:
+                        "Create a shopping list.",
+
+                    15:
+                        "Plan a three-day trip.",
+
+                    16:
+                        "Prepare a news summary.",
+
+                    17:
+                        "Create notes for today's meeting.",
+
+                    18:
+                        "Prepare content for a Word document.",
+
+                    19:
+                        "Create a home task list.",
+
+                    20:
+                        "Suggest some games.",
+
+                }
+
+                st.code(
+                    examples.get(
+                        agent_id,
+                        "Give your instruction here."
+                    )
+                )
+
+
+# ============================================================
+# SCHEDULES PAGE
+# ============================================================
+
+elif current_page == "Schedules":
+
+    st.header(
+        "⏰ Reminders & Schedules"
+    )
+
+    st.info(
+        "Schedules created by BHAI and the Scheduler Agent appear here."
+    )
+
+    rows = get_schedules()
+
+    if not rows:
+
+        st.info(
+            "No schedules available."
+        )
+
+    for row in rows:
+
+        with st.container(border=True):
+
+            col1, col2, col3 = st.columns(
+                [4, 3, 1]
+            )
+
+            with col1:
+
+                st.subheader(
+                    row["title"]
+                )
+
+                st.write(
+                    row["message"]
+                )
+
+            with col2:
+
+                st.write(
+                    "📅",
+                    row["run_at"]
+                )
+
+                st.write(
+                    "🔔",
+                    row["status"]
+                )
+
+                if row["recurrence"]:
+
+                    st.write(
+                        "🔁",
+                        row["recurrence"]
+                    )
+
+            with col3:
+
+                if row["status"] == "Scheduled":
+
+                    if st.button(
+                        "Cancel",
+                        key=f"cancel_{row['id']}"
+                    ):
+
+                        delete_schedule(
+                            row["id"]
+                        )
+
+                        st.rerun()
 
 
 # ============================================================
 # CONTACTS
 # ============================================================
 
-elif page == "Contacts":
+elif current_page == "Contacts":
 
     st.header(
-        "👤 BHAI Contacts"
+        "👤 Contacts Manager"
     )
 
     st.write(
-        "Save recipient names and email addresses. BHAI can then detect the recipient from natural language."
+        "Save names and email addresses. BHAI can use the name in natural-language commands."
     )
 
     with st.form(
-        "contact_form"
+        "add_contact"
     ):
 
-        contact_name = st.text_input(
+        name = st.text_input(
             "Contact Name",
             placeholder="Director"
         )
 
-        contact_email = st.text_input(
-            "Email Address",
+        email = st.text_input(
+            "Email",
             placeholder="director@example.com"
         )
 
-        save_contact = st.form_submit_button(
+        submitted = st.form_submit_button(
             "💾 Save Contact"
         )
 
-    if save_contact:
+    if submitted:
 
-        if not contact_name or not contact_email:
+        if not name or not email:
 
             st.warning(
-                "Please enter both name and email."
+                "Both fields are required."
             )
 
-        elif "@" not in contact_email:
+        elif "@" not in email:
 
             st.warning(
-                "Please enter a valid email address."
+                "Enter a valid email address."
             )
 
         else:
 
             add_contact_db(
-                contact_name,
-                contact_email
+                name,
+                email
             )
 
             st.success(
-                "Contact saved successfully."
+                "Contact saved."
             )
 
             st.rerun()
 
     st.divider()
 
-    st.subheader(
-        "📋 Saved Contacts"
-    )
-
     contacts = get_contacts()
 
-    if not contacts:
+    for contact in contacts:
 
-        st.info(
-            "No contacts saved."
+        col1, col2, col3 = st.columns(
+            [3, 5, 1]
         )
 
-    else:
+        with col1:
 
-        for contact in contacts:
-
-            col1, col2, col3 = st.columns(
-                [3, 5, 1]
+            st.write(
+                "👤",
+                contact["name"]
             )
 
-            with col1:
+        with col2:
 
-                st.write(
-                    f"👤 **{contact['name']}**"
+            st.write(
+                contact["email"]
+            )
+
+        with col3:
+
+            if st.button(
+                "Delete",
+                key=f"delete_{contact['id']}"
+            ):
+
+                delete_contact(
+                    contact["id"]
                 )
 
-            with col2:
-
-                st.write(
-                    contact["email"]
-                )
-
-            with col3:
-
-                if st.button(
-                    "Delete",
-                    key=f"delete_contact_{contact['id']}"
-                ):
-
-                    delete_contact(
-                        contact["id"]
-                    )
-
-                    st.rerun()
+                st.rerun()
 
 
 # ============================================================
 # EMAIL GENERATOR
 # ============================================================
 
-elif page == "Email Generator":
+elif current_page == "Email Generator":
 
     st.header(
         "📧 Email Generator"
@@ -2871,12 +2798,11 @@ elif page == "Email Generator":
 
     purpose = st.text_area(
         "Email Purpose",
-        placeholder="Request approval for AI workshop"
+        height=150
     )
 
-    recipient_name = st.text_input(
-        "Recipient Name",
-        placeholder="Director"
+    recipient = st.text_input(
+        "Recipient Name"
     )
 
     tone = st.selectbox(
@@ -2890,41 +2816,41 @@ elif page == "Email Generator":
     )
 
     if st.button(
-        "Generate Email",
+        "📧 Generate Email",
         type="primary"
     ):
 
         if purpose.strip():
 
-            email = generate_email(
+            result = generate_email(
                 purpose,
-                recipient_name,
+                recipient,
                 tone,
-                model,
-                mode
+                mode,
+                model
             )
 
             st.text_area(
                 "Generated Email",
-                email,
-                height=350
+                result,
+                height=400
             )
 
         else:
 
             st.warning(
-                "Please enter the email purpose."
+                "Enter the email purpose."
             )
 
 
 # ============================================================
-# WORD / PDF GENERATOR
+# DOCUMENT GENERATOR
 # ============================================================
 
-elif page == "Word/PDF Generator":
+elif current_page == "Documents":
 
     st.header(
-        "📄 Word & PDF Generator"
+        "📄 Word / PDF Generator"
     )
 
     title = st.text_input(
@@ -2938,29 +2864,30 @@ elif page == "Word/PDF Generator":
     )
 
     content = st.text_area(
-        "Document Content",
+        "Content",
         height=400
     )
 
     if st.button(
-        "Generate Document Files"
+        "📄 Generate Files",
+        type="primary"
     ):
 
         if not content.strip():
 
             st.warning(
-                "Please enter document content."
+                "Enter document content."
             )
 
         else:
 
-            word_file = create_word_document(
+            word = create_word(
                 title,
                 content,
                 author
             )
 
-            pdf_file = create_pdf_document(
+            pdf = create_pdf(
                 title,
                 content,
                 author
@@ -2970,43 +2897,36 @@ elif page == "Word/PDF Generator":
 
             with col1:
 
-                if word_file:
+                if word:
 
                     st.download_button(
                         "⬇️ Download Word",
-                        data=word_file,
-                        file_name="bhai_document.docx",
-                        mime=(
-                            "application/vnd.openxmlformats-officedocument."
-                            "wordprocessingml.document"
-                        )
+                        word,
+                        "BHAI_Document.docx",
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                     )
 
             with col2:
 
-                if pdf_file:
+                if pdf:
 
                     st.download_button(
                         "⬇️ Download PDF",
-                        data=pdf_file,
-                        file_name="bhai_document.pdf",
-                        mime="application/pdf"
+                        pdf,
+                        "BHAI_Document.pdf",
+                        "application/pdf"
                     )
 
 
 # ============================================================
-# LAST EXECUTION
+# LAST AGENTS
 # ============================================================
 
 if st.session_state.last_agents:
 
     with st.expander(
-        "🧠 Last BHAI Execution"
+        "🧠 Last Activated Agents"
     ):
-
-        st.write(
-            "Activated Agents:"
-        )
 
         for agent_id in st.session_state.last_agents:
 
@@ -3025,11 +2945,9 @@ st.markdown(
     <div class="footer">
 
     <b>🤖 BHAI AI</b><br>
-
     20-Agent Intelligent Daily Routine Automation System<br>
-
-    OpenAI API Mode • Demo Mode • Automatic Scheduler • Email Notification<br><br>
-
+    OpenAI API Mode • Demo Mode • Automatic Scheduling • Email Notifications
+    <br><br>
     <b>By Engr. Bilal Mehmood</b>
 
     </div>
